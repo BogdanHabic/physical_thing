@@ -1,0 +1,6 @@
+[PROJECTS]
+Count=2
+Project0=I2C Advanced\I2C_Advanced.mcpar
+Project1=I2C Simple\I2C_Simple.mcpar
+[ActiveProject]
+Index=0

@@ -1,0 +1,13 @@
+<EasyTFT>
+	<Attributes>
+		<Url></Url>
+		<Image>easytft.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>None</OnLeftClick>
+		<OnRightClick>None</OnRightClick>
+		<OnDblClick>None</OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</EasyTFT>

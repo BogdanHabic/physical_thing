@@ -1,0 +1,13 @@
+<Serial_EEPROMmodule>
+	<Attributes>
+		<Url></Url>
+		<Image></Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>None</OnLeftClick>
+		<OnRightClick>None</OnRightClick>
+		<OnDblClick>None</OnDblClick>
+		<OnMouseOver>None</OnMouseOver>
+	</Events>
+</Serial_EEPROMmodule>

@@ -1,0 +1,1 @@
+const code char easymx_pro_v7_stm32_jpg[61019];

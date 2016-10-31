@@ -1,0 +1,13 @@
+<tft_touchpanel>
+	<Attributes>
+		<Url></Url>
+		<Image>tft_touchscreen_MMB.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>None</OnLeftClick>
+		<OnRightClick>None</OnRightClick>
+		<OnDblClick>None</OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</tft_touchpanel>

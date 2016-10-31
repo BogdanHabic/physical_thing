@@ -1,0 +1,6 @@
+[PROJECTS]
+Count=2
+Project0=Calibration\Touch_Panel_Calibration.mcpar
+Project1=Write on Screen\Touch_Panel_Write.mcpar
+[ActiveProject]
+Index=0

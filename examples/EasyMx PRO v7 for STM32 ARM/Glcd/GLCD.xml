@@ -1,0 +1,13 @@
+<GLCD>
+	<Attributes>
+		<Url>http://www.mikroe.com/en/tools/components/#other</Url>
+		<Image>Glcd.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick>OpenUrl</OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</GLCD>

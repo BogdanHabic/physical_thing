@@ -1,0 +1,6 @@
+[PROJECTS]
+Count=2
+Project0=HID_Read_Write_Interrupt\HID_Read_Write.mcpar
+Project1=HID_Read_Write_Polling\HID_Read_Write_Polling.mcpar
+[ActiveProject]
+Index=0

@@ -1,0 +1,13 @@
+<EasyMxv7>
+	<Attributes>
+		<Url></Url>
+		<Image>easymx_pro_v7_stm32.JPG</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>None</OnLeftClick>
+		<OnRightClick>None</OnRightClick>
+		<OnDblClick>None</OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</EasyMxv7>

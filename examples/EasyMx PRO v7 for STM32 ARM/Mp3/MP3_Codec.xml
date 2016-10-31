@@ -1,0 +1,13 @@
+<MP3_Codec>
+	<Attributes>
+		<Url></Url>
+		<Image>audio_in_out.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>None</OnLeftClick>
+		<OnRightClick>None</OnRightClick>
+		<OnDblClick>None</OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</MP3_Codec>

@@ -1,0 +1,13 @@
+<Joystick>
+	<Attributes>
+		<Url>http://www.mikroe.com/easymx-pro/stm32/</Url>
+		<Image>navigation_switch.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>OpenUrl</OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick></OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</Joystick>

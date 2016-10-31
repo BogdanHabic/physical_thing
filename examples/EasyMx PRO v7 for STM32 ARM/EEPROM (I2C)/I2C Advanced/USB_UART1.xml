@@ -1,0 +1,13 @@
+<USB_UART1>
+	<Attributes>
+		<Url></Url>
+		<Image>usb_uart_a.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick>None</OnLeftClick>
+		<OnRightClick>None</OnRightClick>
+		<OnDblClick>None</OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</USB_UART1>

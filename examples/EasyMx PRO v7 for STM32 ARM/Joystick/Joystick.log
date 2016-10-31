@@ -1,0 +1,11 @@
+0	1	mikroCARM.exe -MSF -DBG -pSTM32F107VC -BIN -LHF -DL -SSA -O11111114 -fo72 -N"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Examples\ST\Development Systems\EasyMx PRO v7 for STM32 ARM\Joystick\Joystick.mcpar" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Examples\ST\Development Systems\EasyMx PRO v7 for STM32 ARM\Joystick\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\ST M3\" "Joystick.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_Delays.emcl" "__Lib_System_105_107.emcl" "__Lib_GPIO_32F10x_Defs.emcl" "__Lib_GPIO_32F10x.emcl" "__Lib_Button.emcl" "__Lib_TFT.emcl" "__Lib_TFT_Defs.emcl"	 
+diagnostics: 0	122	Compilation Started	Joystick.c
+diagnostics: 145	123	Compiled Successfully	Joystick.c
+diagnostics: 0	127	All files Compiled in 94 ms	 
+hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
+hint: 0	1144	Static RAM (bytes): 120   Dynamic RAM (bytes): 65413	Static RAM (bytes): 120   Dynamic RAM (bytes): 65413
+hint: 0	1144	Used ROM (bytes): 12306 (5%)  Free ROM (bytes): 249838 (95%)	Used ROM (bytes): 12306 (5%)  Free ROM (bytes): 249838 (95%)
+diagnostics: 0	125	Project Linked Successfully	Joystick.mcpar
+diagnostics: 0	128	Linked in 516 ms	 
+diagnostics: 0	129	Project 'Joystick.mcpar' completed: 813 ms	 
+diagnostics: 0	103	Finished successfully: 17 Oct 2016, 11:54:00	Joystick.mcpar

@@ -1,0 +1,6 @@
+[PROJECTS]
+Count=2
+Project0=CAN1\CAN1.mcpar
+Project1=CAN2\CAN2.mcpar
+[ActiveProject]
+Index=0

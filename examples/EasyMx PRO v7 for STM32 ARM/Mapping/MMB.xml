@@ -1,0 +1,13 @@
+<MMB>
+	<Attributes>
+		<Url></Url>
+		<Image>tft.jpg</Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick></OnDblClick>
+		<OnMouseOver>PreviewImage</OnMouseOver>
+	</Events>
+</MMB>

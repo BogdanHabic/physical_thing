@@ -1,0 +1,33 @@
+[PROJECTS]
+Count=29
+Project0=ADC Demo\ADC Demo.mcpar
+Project1=Button\Button.mcpar
+Project2=Calculator\calculator.mcpar
+Project3=CAN\CAN1\CAN1.mcpar
+Project4=CAN\CAN2\CAN2.mcpar
+Project5=EEPROM (I2C)\I2C Advanced\I2C_Advanced.mcpar
+Project6=EEPROM (I2C)\I2C Simple\I2C_Simple.mcpar
+Project7=Ethernet Demo\Ethernet_Demo.mcpar
+Project8=Glcd\Glcd.mcpar
+Project9=Joystick\Joystick.mcpar
+Project10=Led Blinking\LedBlinking.mcpar
+Project11=Led Blinking\Led_Currtain.mcpar
+Project12=LM35\LM35.mcpar
+Project13=Mapping\mapping.mcpar
+Project14=MMC\MMC Common\MMC_Test.mcpar
+Project15=MMC\MMC Fat16\MMC_Fat16_Test.mcpar
+Project16=Mp3\MP3.mcpar
+Project17=One Wire\OneWire.mcpar
+Project18=Serial Flash\Serial_Flash.mcpar
+Project19=Simple Maze\simple_maze.mcpar
+Project20=Sound\Sound.mcpar
+Project21=TFT\TFT.mcpar
+Project22=Touch Panel\Calibration and Write on Screen\Touch_Panel_Calibration_and_Write.mcpar
+Project23=Touch Panel\Calibration then Write on Screen\Calibration\Touch_Panel_Calibration.mcpar
+Project24=Touch Panel\Calibration then Write on Screen\Write on Screen\Touch_Panel_Write.mcpar
+Project25=UART1\UART1.mcpar
+Project26=UART2\UART2.mcpar
+Project27=USB\HID_Read_Write_Interrupt\HID_Read_Write.mcpar
+Project28=USB\HID_Read_Write_Polling\HID_Read_Write_Polling.mcpar
+[ActiveProject]
+Index=0
