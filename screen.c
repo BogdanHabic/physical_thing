@@ -32,6 +32,12 @@
 #define STATE_RUNNING 1
 #define STATE_PAUSE 2
 
+#define B_START 1
+#define B_LAP 2
+#define B_RESET 3
+#define B_PAUSE 4
+#define B_SAVE 5
+
 // Glcd module connections
 unsigned long GLCD_DataPort_Input  at GPIOE_IDR;
 unsigned long GLCD_DataPort_Output at GPIOE_ODR;
@@ -52,6 +58,7 @@ char pause_msg[] = "P";
 int readbuff[32];
 char writebuff[64];
 int curr_state = STATE_PAUSE;
+int prev_b = 0;
 
 int times[COUNTERS];
 unsigned int x_coord, y_coord;
@@ -126,22 +133,42 @@ void delay10ms() {
 }
 
 int check_start() {
+    if (prev_b == B_START) {
+	return 0;
+    }
+
     return Button(&GPIOA_IDR, 0, 1, 1);
 }
 
 int check_lap() {
+    if (prev_b == B_LAP) {
+	return 0;
+    }
+
     return Button(&GPIOA_IDR, 1, 1, 1);
 }
 
 int check_reset() {
+    if (prev_b == B_RESET) {
+	return 0;
+    }
+
     return Button(&GPIOA_IDR, 2, 1, 1);
 }
 
 int check_pause() {
+    if (prev_b == B_PAUSE) {
+	return 0;
+    }
+
     return Button(&GPIOA_IDR, 3, 1, 1);
 }
 
 int check_save() {
+    if (prev_b == B_SAVE) {
+	return 0;
+    }
+
     return Button(&GPIOA_IDR, 4, 1, 1);
 }
 
@@ -188,22 +215,25 @@ void main(void){
         } else {
             if (curr_state == STATE_RUNNING) {
                 if (check_pause()) {
-
+                    pause_timer();
                 } else if (check_lap()) {
-
+                    lap_timer();
+                    print_timers();
                 } else if (check_save()) {
-
+                    save_timer();
+                    print_timers();
                 } // Here we can stop, lap, save or pause.
             } else if (curr_state == STATE_PAUSE) {
                 if (check_start()) {
-
+                    start_timer();
                 } else if (check_lap()) {
-
+                    lap_timer();
+                    print_timers();
                 } else if (check_save()) {
-
+                    save_timer();
+                    print_timers();
                 } // Here we can start, save
             }
-            // Check for button clicks
         }
     }
 }
