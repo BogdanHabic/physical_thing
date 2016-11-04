@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="hidapi-1.1">
+    <archive path="/Users/bogdanhabic/Development/Fakultet/physical_thing/bridge/libs/hidapi-1.1.jar" />
+  </library>
+  <library name="sass-stdlib" />
+</eclipse-userlibraries>
+
