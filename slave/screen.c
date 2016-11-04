@@ -134,7 +134,7 @@ void delay10ms() {
 
 int check_start() {
     if (prev_b == B_START) {
-	return 0;
+        return 0;
     }
 
     return Button(&GPIOA_IDR, 0, 1, 1);
@@ -142,7 +142,7 @@ int check_start() {
 
 int check_lap() {
     if (prev_b == B_LAP) {
-	return 0;
+        return 0;
     }
 
     return Button(&GPIOA_IDR, 1, 1, 1);
@@ -150,7 +150,7 @@ int check_lap() {
 
 int check_reset() {
     if (prev_b == B_RESET) {
-	return 0;
+        return 0;
     }
 
     return Button(&GPIOA_IDR, 2, 1, 1);
@@ -158,7 +158,7 @@ int check_reset() {
 
 int check_pause() {
     if (prev_b == B_PAUSE) {
-	return 0;
+        return 0;
     }
 
     return Button(&GPIOA_IDR, 3, 1, 1);
@@ -166,7 +166,7 @@ int check_pause() {
 
 int check_save() {
     if (prev_b == B_SAVE) {
-	return 0;
+        return 0;
     }
 
     return Button(&GPIOA_IDR, 4, 1, 1);
@@ -201,7 +201,7 @@ void lap_timer() {
     start_timer();
 }
 
-void main(void){
+void main(void) {
   char cnt;
   Initialize();
 
