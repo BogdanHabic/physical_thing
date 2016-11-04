@@ -48,7 +48,6 @@ bit          write_erase;
 char         pen_size;
 char start_msg[] = "S";
 char reset_msg[] = "R";
-char lap_msg[] = "L";
 char pause_msg[] = "P";
 int readbuff[32];
 char writebuff[64];
@@ -59,123 +58,6 @@ unsigned int x_coord, y_coord;
 
 void USB0Interrupt() iv IVT_INT_OTG_FS{
   USB_Interrupt_Proc();
-}
-
-void Initialize() {
-	int i;
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_0); // Set PA0 as start
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_1); // Set PA1 as lap
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_2); // Set PA2 as reset
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_3); // Set PA3 as pause
-
-    HID_Enable(&readbuff,&writebuff);
-
-	Glcd_Init();                                     // Initialize GLCD
-	Glcd_Fill(0);                                    // Clear GLCD
-
-	for(i = 0; i < COUNTERS; i++) {
-		times[i] = 0;
-	}
-}
-
-void delay2S() {                                    // 2 seconds delay function
-  Delay_ms(2000);
-}
-
-void delay1S() {                                    // 2 seconds delay function
-  Delay_ms(1000);
-}
-
-void delay10ms() {                                    // 2 seconds delay function
-  Delay_ms(10);
-}
-
-void main() {
-	Initialize();
-
-	Glcd_Write_Text("CALIBRATION", 32, 3, 1);
-	Delay_ms(1000);
-	Glcd_Fill(0);                                    // Clear GLCD
-}
-
-void main(void){
-  char cnt;
-  HID_Enable(&readbuff, &writebuff);
-
-    while (1) {
-        // call print_timers() inside this loop.
-        if (HID_Read()) { // this won't hang because we are using async interrupts
-            if (curr_state == STATE_RUNNING) { // If we are not in a running state we just drop the messsage. @TODO: Check if we can skip HID_Read() all together.
-                update_time(); // check state or drop message
-                print_timers();
-            }
-        } else {
-            if (curr_state == STATE_RUNNING) {
-                if (check_pause()) {
-
-                } else if (check_lap()) {
-
-                } else if (check_save()) {
-
-                } // Here we can stop, lap, save or pause.
-            } else if (curr_state == STATE_PAUSE) {
-                if (check_start()) {
-
-                } else if (check_lap()) {
-
-                } else if (check_save()) {
-
-                } // Here we can start, save
-            }
-            // Check for button clicks
-        }
-    }
-}
-
-int check_start() {
-    return Button(&GPIOA_IDR, 0, 1, 1);
-}
-
-int check_lap() {
-    return Button(&GPIOA_IDR, 1, 1, 1);
-}
-
-int check_reset() {
-    return Button(&GPIOA_IDR, 2, 1, 1);
-}
-
-int check_pause() {
-    return Button(&GPIOA_IDR, 3, 1, 1);
-}
-
-void start_timer() {
-    writebuff[0] = start_msg[0];
-    while(!HID_Write(&writebuff,64)); // Send the message
-    print_timers();
-}
-
-void pause_timer() {
-    writebuff[0] = pause_msg[0];
-    while(!HID_Write(&writebuff,64));
-}
-
-void save_timer() {
-    shift_timers(1);
-}
-
-void reset_timer() {
-    writebuff[0] = stop_msg[0];
-    shift_timers(0);
-    while(!HID_Write(&writebuff,64));
-}
-
-void update_time() {
-    times[0] = readbuff[0];
-}
-
-void lap_timer() {
-    reset_timer();
-    start_timer();
 }
 
 void shift_timers(int keep_curr) {
@@ -217,4 +99,111 @@ void print_timers() {
 		delay10ms();
 		pos_y += 2;
 	}
+}
+
+void Initialize() {
+    int i;
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_0); // Set PA0 as start
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_1); // Set PA1 as lap
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_2); // Set PA2 as reset
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_3); // Set PA3 as pause
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_4); // Set PA4 as save
+
+    HID_Enable(&readbuff,&writebuff);
+
+    Glcd_Init();                                     // Initialize GLCD
+    Glcd_Fill(0);                                    // Clear GLCD
+
+    for(i = 0; i < COUNTERS; i++) {
+        times[i] = 0;
+    }
+
+    print_timers();
+}
+
+void delay10ms() {
+  Delay_ms(10);
+}
+
+int check_start() {
+    return Button(&GPIOA_IDR, 0, 1, 1);
+}
+
+int check_lap() {
+    return Button(&GPIOA_IDR, 1, 1, 1);
+}
+
+int check_reset() {
+    return Button(&GPIOA_IDR, 2, 1, 1);
+}
+
+int check_pause() {
+    return Button(&GPIOA_IDR, 3, 1, 1);
+}
+
+int check_save() {
+    return Button(&GPIOA_IDR, 4, 1, 1);
+}
+
+void start_timer() {
+    writebuff[0] = start_msg[0];
+    while(!HID_Write(&writebuff,64)); // Send the message
+}
+
+void pause_timer() {
+    writebuff[0] = pause_msg[0];
+    while(!HID_Write(&writebuff,64));
+}
+
+void save_timer() {
+    shift_timers(1);
+}
+
+void reset_timer() {
+    writebuff[0] = reset_msg[0];
+    while(!HID_Write(&writebuff,64));
+}
+
+void update_time() {
+    times[0] = readbuff[0];
+}
+
+void lap_timer() {
+    reset_timer();
+    shift_timers(0);
+    start_timer();
+}
+
+void main(void){
+  char cnt;
+  Initialize();
+
+    while (1) {
+        // call print_timers() inside this loop.
+        if (HID_Read()) { // this won't hang because we are using async interrupts
+            if (curr_state == STATE_RUNNING) { // If we are not in a running state we just drop the messsage. @TODO: Check if we can skip HID_Read() all together.
+                update_time(); // check state or drop message
+                print_timers();
+            }
+        } else {
+            if (curr_state == STATE_RUNNING) {
+                if (check_pause()) {
+
+                } else if (check_lap()) {
+
+                } else if (check_save()) {
+
+                } // Here we can stop, lap, save or pause.
+            } else if (curr_state == STATE_PAUSE) {
+                if (check_start()) {
+
+                } else if (check_lap()) {
+
+                } else if (check_save()) {
+
+                } // Here we can start, save
+            }
+            // Check for button clicks
+        }
+    }
 }
