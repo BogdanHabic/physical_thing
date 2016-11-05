@@ -6,16 +6,17 @@ import com.codeminders.hidapi.HIDManager;
 import java.io.IOException;
 
 public class Main {
-
-    //ucitavanje nativne HID biblioteke
+    public static HIDDevice slave = null;
+    public static HIDDevice master = null;
+    static final char start_msg = 'S';
+    static final char reset_msg = 'R';
+    static final char pause_msg = 'P';
 
     //mora da postoji hidapi-jni.dll na putanji za nativne
     //biblioteke za hidapi-1.1.jar
-
     //desni klik na projekat -> properties ->
     //-> java build path -> libraries -> hidapi-1.1 ->
     //-> native libraries
-
     //na materijalima postoje hidapi-jni-32 i hidapi-jni-64
     //iskoristiti odgovarajuci prema arhitekturi
     static {
@@ -25,75 +26,106 @@ public class Main {
     private static final int BUF_SIZE = 64;
 
     public static void main(String[] args) throws IOException {
-        //slave ce predstavljati uredjaj sa kojim komuniciramo
-        HIDDevice slave = null;
+        HIDManager hidMgr = null;
 
-        HIDManager hidMgr;
         try {
             hidMgr = HIDManager.getInstance();
 
-            //dohvatamo listu svih HID USB uredjaja
-
-            boolean nasao = false;
             while (true) {
-                HIDDeviceInfo[] infos = hidMgr.listDevices();
-
-                for (HIDDeviceInfo info : infos) {
-                    //pronadjemo USB vezu sa mikrokontrolerom
-                    if (info.getProduct_string().compareTo("USB HID Library") == 0) {
-                        nasao = true;
+                for (HIDDeviceInfo info : hidMgr.listDevices()) {
+                    if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
                         slave = info.open();
                         break;
-
                     }
-                    //System.out.println(info.getProduct_string());
-                }
-                if (nasao) break;
 
+                    if (info.getProduct_string().compareTo("HOST ID Library") == 0) {
+                        master = info.open();
+                        break;
+                    }
+                }
+
+                if (slave != null && master != null) {
+                    break;
+                }
             }
 
-            System.out.println("nasao");
-
-
-            try {
-                //bafer za citanje
-                byte[] readBuf = new byte[BUF_SIZE];
-                //IO je blokirajuci, a ne asinhron
-                //asinhron IO bi podrazumevao prekide
-                slave.enableBlocking();
-
-                //bafer za pisanje
-                byte[] writeBuf = new byte[BUF_SIZE];
-                //kada pisemo, prvi bajt naznacava
-                //'report', koji odredjuje format USB komunikacije
-                //kod nas postoji samo jedan report, sa rednim brojem 0
-                //tako da ce nam prvi bajt uvek biti 0
-                writeBuf[0] = 0;
-                writeBuf[1] = 'A';
-                writeBuf[2] = 'S';
-                writeBuf[3] = 'D';
-
-                slave.write(writeBuf);
-                slave.read(readBuf);
-                String bufString = new String(readBuf);
-                System.out.println(bufString);
-
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            while (true) {
+                String slaveMsg = readSlave();
+                if (slaveMsg != null) {
+                    processSlaveMessage(slaveMsg);
+                } else {
+                    String masterMsg = readMaster();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
 
-                slave.close();
-                hidMgr.release();
+                Thread.sleep(20);
             }
-
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            slave.close();
+            master.close();
+            hidMgr.release();
         }
     }
 
+    private static void processSlaveMessage(String slaveMsg) {
+        char msg = slaveMsg.charAt(0);
+        sendToMaster(msg);
+    }
+
+    private static void sendToMaster(char msg) {
+        String possibleMasterMsg = readMaster();
+        writeToMaster(msg);
+    }
+
+    public static String readSlave() {
+        return readHID("slave");
+    }
+
+    public static String readMaster() {
+        return readHID("master");
+    }
+
+    public static String readHID(String type) {
+        try {
+            byte[] data = new byte[64];
+            int read = 0;
+            switch (type) {
+                case "slave":
+                    slave.disableBlocking();
+                    read = slave.read(data);
+                    break;
+                case "master":
+                    master.disableBlocking();
+                    read = master.read(data);
+                    break;
+            }
+            if (read > 0) {
+                String str = "";
+                for (int i = 0; i < read; i++) {
+                    if (data[i] != 0) {
+                        str += data[i];
+                    }
+                }
+                return str;
+            } else {
+                return null;
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static void writeToMaster(char value) {
+        byte[] data = new byte[64];
+        data[0] = (byte) 1;
+        data[1] = (byte) value;
+        try {
+            System.out.println("SENT TO MASTER: " + master.write(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
