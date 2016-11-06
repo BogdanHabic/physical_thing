@@ -26,11 +26,9 @@ public class Main {
     private static final int BUF_SIZE = 64;
 
     public static void main(String[] args) throws IOException {
-        HIDManager hidMgr = null;
+        HIDManager hidMgr = HIDManager.getInstance();
 
         try {
-            hidMgr = HIDManager.getInstance();
-
             while (true) {
                 for (HIDDeviceInfo info : hidMgr.listDevices()) {
                     if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
@@ -62,8 +60,13 @@ public class Main {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
-            slave.close();
-            master.close();
+            if (slave != null) {
+                slave.close();
+            }
+            if (master != null) {
+                master.close();
+            }
+
             hidMgr.release();
         }
     }
@@ -79,11 +82,23 @@ public class Main {
     }
 
     public static String readSlave() {
-        return readHID("slave");
+        String slaveMsg = readHID("slave");
+
+        if (slaveMsg != null) {
+            System.out.println("RECEIVED FROM SLAVE: " + slaveMsg);
+        }
+
+        return slaveMsg;
     }
 
     public static String readMaster() {
-        return readHID("master");
+        String masterMsg = readHID("master");
+
+        if (masterMsg != null) {
+            System.out.println("RECEIVED FROM MASTER: " + masterMsg);
+        }
+
+        return masterMsg;
     }
 
     public static String readHID(String type) {
