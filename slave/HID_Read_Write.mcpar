@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=HID_Read_Write.c
+Value=screen.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -22,15 +22,17 @@ VECTOR_MODE=1
 USE_SRS=7
 [FILES]
 Count=2
-File0=HID_Read_Write.c
-File1=USBdsc.c
+File0=USBdsc.c
+File1=screen.c
 [BINARIES]
 Count=0
 [IMAGES]
+Count=0
+ActiveImageIndex=-1
+[OPENED_FILES]
 Count=2
-File0=..\USB.jpg
-File1=..\..\easymx_v7_for_stm32_arm.jpg
-ActiveImageIndex=1
+File0=screen.c
+File1=USBdsc.c
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -38,16 +40,30 @@ Count=1
 File0=USB.xml
 [OTHER_FILES]
 Count=0
+[SEARCH_PATH]
+Count=4
+Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Defs\
+Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\
+Path2=C:\Users\lazar\Desktop\physical_thing-master\slave\
+Path3=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\ST M3\
+[HEADER_PATH]
+Count=0
 [HEADERS]
 Count=0
 [PLDS]
 Count=0
 [Useses]
-Count=2
+Count=7
 File0=USB
 File1=GPIO
+File2=Sprintf
+File3=C_Type
+File4=TFT
+File5=TFT_Defs
+File6=Button
 [EXPANDED_NODES]
-Count=0
+Node0=Sources
+Count=1
 [PROGRAMMER_OPTIONS]
 Value=SWD
 [PROGRAMMER_TYPE]

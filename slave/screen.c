@@ -27,7 +27,7 @@
 #define COUNTERS 4
 #define COUNTER_PADDING 10
 #define INITIAL_POS_X 32
-#define INITIAL_POS_Y 0
+#define INITIAL_POS_Y 30
 #define STOPWATCH_BUFFER_SIZE 10
 #define STATE_RUNNING 1
 #define STATE_PAUSE 2
@@ -38,17 +38,15 @@
 #define B_PAUSE 4
 #define B_SAVE 5
 
-// Glcd module connections
-unsigned long GLCD_DataPort_Input  at GPIOE_IDR;
-unsigned long GLCD_DataPort_Output at GPIOE_ODR;
-
-sbit GLCD_CS1           at GPIOE_ODR.B10;
-sbit GLCD_CS2           at GPIOE_ODR.B11;
-sbit GLCD_RS            at GPIOE_ODR.B12;
-sbit GLCD_RW            at GPIOE_ODR.B13;
-sbit GLCD_EN            at GPIOE_ODR.B15;
-sbit GLCD_RST           at GPIOE_ODR.B8;
-// End Glcd module connections
+// TFT module connections
+unsigned int TFT_DataPort at GPIOE_ODR;
+sbit TFT_RST at GPIOE_ODR.B8;
+sbit TFT_RS at GPIOE_ODR.B12;
+sbit TFT_CS at GPIOE_ODR.B15;
+sbit TFT_RD at GPIOE_ODR.B10;
+sbit TFT_WR at GPIOE_ODR.B11;
+sbit TFT_BLED at GPIOE_ODR.B9;
+// End TFT module connections
 
 bit          write_erase;
 char         pen_size;
@@ -59,12 +57,17 @@ int readbuff[32];
 char writebuff[64];
 int curr_state = STATE_PAUSE;
 int prev_b = 0;
+int timers_shifted = 0;
 
 int times[COUNTERS];
 unsigned int x_coord, y_coord;
 
 void USB0Interrupt() iv IVT_INT_OTG_FS{
   USB_Interrupt_Proc();
+}
+
+void delay10ms() {
+  Delay_ms(10);
 }
 
 void shift_timers(int keep_curr) {
@@ -80,32 +83,38 @@ void shift_timers(int keep_curr) {
     if (!keep_curr) {
         times[0] = 0;
     }
+    
+    timers_shifted = 1;
 }
 
 void print_timers() {
-	int i, h, m, s, temp;
-	int pos_y = INITIAL_POS_Y;
-	char str[STOPWATCH_BUFFER_SIZE];
+        int i, h, m, s, temp;
+        int pos_y = INITIAL_POS_Y;
+        char str[STOPWATCH_BUFFER_SIZE];
 
-	Glcd_Fill(0); // Clear GLCD
-	delay10ms();
+        if(timers_shifted) {
+            TFT_Fill_Screen(CL_AQUA); // Clear TFT
+            timers_shifted = 0;
+        }
 
-	for(i = 0; i < COUNTERS; i++) {
-		temp = times[i];
+        TFT_Rectangle(20, 30, 219, 50);
 
-		h = temp / 3600;
-		temp %= 3600;
+        for(i = 0; i < COUNTERS; i++) {
+                temp = times[i];
 
-		m = temp / 60;
-		temp %= 60;
+                h = temp / 3600;
+                temp %= 3600;
 
-		s = temp;
+                m = temp / 60;
+                temp %= 60;
 
-		sprintf(str, "%02d:%02d:%02d", h, m, s);
-		Glcd_Write_Text(str, INITIAL_POS_X, pos_y, 1);
-		delay10ms();
-		pos_y += 2;
-	}
+                s = temp;
+
+                sprintf(str, "%02d:%02d:%02d", h, m, s);
+                TFT_Write_Text(str, INITIAL_POS_X, pos_y);
+                delay10ms();
+                pos_y += 20;
+        }
 }
 
 void Initialize() {
@@ -115,11 +124,14 @@ void Initialize() {
     GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_2); // Set PA2 as reset
     GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_3); // Set PA3 as pause
     GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_4); // Set PA4 as save
+    
+    TFT_Init_ILI9341_8bit(320, 240);
+    TFT_Set_Pen(CL_AQUA, 3);
+    TFT_Set_Font(TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+    TFT_Fill_Screen(CL_AQUA);
+    TFT_Set_Brush(1, CL_BLACK, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
 
     HID_Enable(&readbuff,&writebuff);
-
-    Glcd_Init();                                     // Initialize GLCD
-    Glcd_Fill(0);                                    // Clear GLCD
 
     for(i = 0; i < COUNTERS; i++) {
         times[i] = 0;
@@ -128,53 +140,70 @@ void Initialize() {
     print_timers();
 }
 
-void delay10ms() {
-  Delay_ms(10);
-}
-
 int check_start() {
+    int val;
     if (prev_b == B_START) {
         return 0;
     }
 
-    return Button(&GPIOA_IDR, 0, 1, 1);
+    val = Button(&GPIOA_IDR, 0, 1, 1);
+    if(val) prev_b = B_START;
+
+    return val;
 }
 
 int check_lap() {
+    int val;
     if (prev_b == B_LAP) {
         return 0;
     }
+    
+    val = Button(&GPIOA_IDR, 1, 1, 1);
+    if(val) prev_b = B_LAP;
 
-    return Button(&GPIOA_IDR, 1, 1, 1);
+    return val;
 }
 
 int check_reset() {
+    int val;
     if (prev_b == B_RESET) {
         return 0;
     }
+    
+    val = Button(&GPIOA_IDR, 2, 1, 1);
+    if(val) prev_b = B_RESET;
 
-    return Button(&GPIOA_IDR, 2, 1, 1);
+    return val;
 }
 
 int check_pause() {
+    int val;
     if (prev_b == B_PAUSE) {
         return 0;
     }
 
-    return Button(&GPIOA_IDR, 3, 1, 1);
+    val = Button(&GPIOA_IDR, 3, 1, 1);
+    if(val) prev_b = B_PAUSE;
+
+    return val;
 }
 
 int check_save() {
+    int val;
     if (prev_b == B_SAVE) {
         return 0;
     }
 
-    return Button(&GPIOA_IDR, 4, 1, 1);
+    val = Button(&GPIOA_IDR, 4, 1, 1);
+    if(val) prev_b = B_SAVE;
+
+    return val;
 }
 
 void start_timer() {
     writebuff[0] = start_msg[0];
     while(!HID_Write(&writebuff,64)); // Send the message
+    curr_state = STATE_RUNNING;
 }
 
 void pause_timer() {
@@ -207,8 +236,12 @@ void main(void) {
 
     while (1) {
         // call print_timers() inside this loop.
-        if (HID_Read()) { // this won't hang because we are using async interrupts
-            if (curr_state == STATE_RUNNING) { // If we are not in a running state we just drop the messsage. @TODO: Check if we can skip HID_Read() all together.
+
+
+        if (curr_state == STATE_RUNNING) {
+            if (HID_Read()) { // this won't hang because we are using async interrupts
+             // If we are not in a running state we just drop the messsage. @TODO: Check if we can skip HID_Read() all together.
+                TFT_Write_Text(readbuff, 200, 200);
                 update_time(); // check state or drop message
                 print_timers();
             }
