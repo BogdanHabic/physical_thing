@@ -1,4 +1,5 @@
 
+import com.codeminders.hidapi.ClassPathLibraryLoader;
 import com.codeminders.hidapi.HIDDevice;
 import com.codeminders.hidapi.HIDDeviceInfo;
 import com.codeminders.hidapi.HIDManager;
@@ -26,22 +27,29 @@ public class Main {
     private static final int BUF_SIZE = 64;
 
     public static void main(String[] args) throws IOException {
+    	ClassPathLibraryLoader.loadNativeHIDLibrary();
         HIDManager hidMgr = HIDManager.getInstance();
 
         try {
             while (true) {
-                for (HIDDeviceInfo info : hidMgr.listDevices()) {
-                    if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
-                        slave = info.open();
-                        break;
-                    }
+            	HIDDeviceInfo[] infos = hidMgr.listDevices();
+            	
+            	if(infos == null) {
+            		continue;
+            	}
+            	
+                for (HIDDeviceInfo info : infos) {
+//                    if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
+//                        slave = info.open();
+//                        break;
+//                    }
 
                     if (info.getProduct_string().compareTo("HOST ID Library") == 0) {
                         master = info.open();
                         break;
                     }
                 }
-
+                
                 if (slave != null && master != null) {
                     break;
                 }
@@ -49,6 +57,7 @@ public class Main {
 
             while (true) {
                 String slaveMsg = readSlave();
+
                 if (slaveMsg != null) {
                     processSlaveMessage(slaveMsg);
                 } else {
@@ -67,7 +76,9 @@ public class Main {
                 master.close();
             }
 
-            hidMgr.release();
+            if(hidMgr != null) {
+            	hidMgr.release();
+            }
         }
     }
 
