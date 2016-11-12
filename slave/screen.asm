@@ -213,18 +213,18 @@ MOVW	R1, #1
 MOVW	R0, #lo_addr(GPIOA_IDR+0)
 MOVT	R0, #hi_addr(GPIOA_IDR+0)
 BL	_GPIO_Digital_Input+0
-;screen.c,123 :: 		GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_1); // Set PA1 as lap
-MOVW	R1, #2
+;screen.c,123 :: 		GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_6); // Set PA6 as lap
+MOVW	R1, #64
 MOVW	R0, #lo_addr(GPIOA_IDR+0)
 MOVT	R0, #hi_addr(GPIOA_IDR+0)
 BL	_GPIO_Digital_Input+0
-;screen.c,124 :: 		GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_2); // Set PA2 as reset
-MOVW	R1, #4
-MOVW	R0, #lo_addr(GPIOA_IDR+0)
-MOVT	R0, #hi_addr(GPIOA_IDR+0)
+;screen.c,124 :: 		GPIO_Digital_Input(&GPIOD_IDR, _GPIO_PINMASK_4); // Set PD4 as reset
+MOVW	R1, #16
+MOVW	R0, #lo_addr(GPIOD_IDR+0)
+MOVT	R0, #hi_addr(GPIOD_IDR+0)
 BL	_GPIO_Digital_Input+0
-;screen.c,125 :: 		GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_3); // Set PA3 as pause
-MOVW	R1, #8
+;screen.c,125 :: 		GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_5); // Set PA5 as pause
+MOVW	R1, #32
 MOVW	R0, #lo_addr(GPIOA_IDR+0)
 MOVT	R0, #hi_addr(GPIOA_IDR+0)
 BL	_GPIO_Digital_Input+0
@@ -366,10 +366,10 @@ IT	AL
 BAL	L_end_check_lap
 ;screen.c,159 :: 		}
 L_check_lap15:
-;screen.c,161 :: 		val = Button(&GPIOA_IDR, 1, 1, 1);
+;screen.c,161 :: 		val = Button(&GPIOA_IDR, 6, 1, 1);
 MOVS	R3, #1
 MOVS	R2, #1
-MOVS	R1, #1
+MOVS	R1, #6
 MOVW	R0, #lo_addr(GPIOA_IDR+0)
 MOVT	R0, #hi_addr(GPIOA_IDR+0)
 BL	_Button+0
@@ -413,12 +413,12 @@ IT	AL
 BAL	L_end_check_reset
 ;screen.c,171 :: 		}
 L_check_reset17:
-;screen.c,173 :: 		val = Button(&GPIOA_IDR, 2, 1, 1);
+;screen.c,173 :: 		val = Button(&GPIOD_IDR, 4, 1, 1);
 MOVS	R3, #1
 MOVS	R2, #1
-MOVS	R1, #2
-MOVW	R0, #lo_addr(GPIOA_IDR+0)
-MOVT	R0, #hi_addr(GPIOA_IDR+0)
+MOVS	R1, #4
+MOVW	R0, #lo_addr(GPIOD_IDR+0)
+MOVT	R0, #hi_addr(GPIOD_IDR+0)
 BL	_Button+0
 ; val start address is: 8 (R2)
 SXTH	R2, R0
@@ -460,10 +460,10 @@ IT	AL
 BAL	L_end_check_pause
 ;screen.c,183 :: 		}
 L_check_pause19:
-;screen.c,185 :: 		val = Button(&GPIOA_IDR, 3, 1, 1);
+;screen.c,185 :: 		val = Button(&GPIOA_IDR, 5, 1, 1);
 MOVS	R3, #1
 MOVS	R2, #1
-MOVS	R1, #3
+MOVS	R1, #5
 MOVW	R0, #lo_addr(GPIOA_IDR+0)
 MOVT	R0, #hi_addr(GPIOA_IDR+0)
 BL	_Button+0
@@ -547,7 +547,13 @@ LDRB	R1, [R0, #0]
 MOVW	R0, #lo_addr(_writebuff+0)
 MOVT	R0, #hi_addr(_writebuff+0)
 STRB	R1, [R0, #0]
-;screen.c,205 :: 		while(!HID_Write(&writebuff,64)); // Send the message
+;screen.c,205 :: 		TFT_Write_Text("START", 100, 100);
+MOVW	R0, #lo_addr(?lstr2_screen+0)
+MOVT	R0, #hi_addr(?lstr2_screen+0)
+MOVS	R2, #100
+MOVS	R1, #100
+BL	_TFT_Write_Text+0
+;screen.c,206 :: 		while(!HID_Write(&writebuff,64)); // Send the message
 L_start_timer23:
 MOVS	R1, #64
 MOVW	R0, #lo_addr(_writebuff+0)
@@ -559,30 +565,36 @@ BNE	L_start_timer24
 IT	AL
 BAL	L_start_timer23
 L_start_timer24:
-;screen.c,206 :: 		curr_state = STATE_RUNNING;
+;screen.c,207 :: 		curr_state = STATE_RUNNING;
 MOVS	R1, #1
 SXTH	R1, R1
 MOVW	R0, #lo_addr(_curr_state+0)
 MOVT	R0, #hi_addr(_curr_state+0)
 STRH	R1, [R0, #0]
-;screen.c,207 :: 		}
+;screen.c,208 :: 		}
 L_end_start_timer:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _start_timer
 _pause_timer:
-;screen.c,209 :: 		void pause_timer() {
+;screen.c,210 :: 		void pause_timer() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,210 :: 		writebuff[0] = pause_msg[0];
+;screen.c,212 :: 		writebuff[0] = pause_msg[0];
 MOVW	R0, #lo_addr(_pause_msg+0)
 MOVT	R0, #hi_addr(_pause_msg+0)
 LDRB	R1, [R0, #0]
 MOVW	R0, #lo_addr(_writebuff+0)
 MOVT	R0, #hi_addr(_writebuff+0)
 STRB	R1, [R0, #0]
-;screen.c,211 :: 		while(!HID_Write(&writebuff,64));
+;screen.c,214 :: 		TFT_Write_Text("PAUSE", 120, 120);
+MOVW	R0, #lo_addr(?lstr3_screen+0)
+MOVT	R0, #hi_addr(?lstr3_screen+0)
+MOVS	R2, #120
+MOVS	R1, #120
+BL	_TFT_Write_Text+0
+;screen.c,215 :: 		while(!HID_Write(&writebuff,64));
 L_pause_timer25:
 MOVS	R1, #64
 MOVW	R0, #lo_addr(_writebuff+0)
@@ -594,38 +606,50 @@ BNE	L_pause_timer26
 IT	AL
 BAL	L_pause_timer25
 L_pause_timer26:
-;screen.c,212 :: 		}
+;screen.c,216 :: 		curr_state = STATE_PAUSE;
+MOVS	R1, #2
+SXTH	R1, R1
+MOVW	R0, #lo_addr(_curr_state+0)
+MOVT	R0, #hi_addr(_curr_state+0)
+STRH	R1, [R0, #0]
+;screen.c,217 :: 		}
 L_end_pause_timer:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _pause_timer
 _save_timer:
-;screen.c,214 :: 		void save_timer() {
+;screen.c,219 :: 		void save_timer() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,215 :: 		shift_timers(1);
+;screen.c,220 :: 		shift_timers(1);
 MOVS	R0, #1
 SXTH	R0, R0
 BL	_shift_timers+0
-;screen.c,216 :: 		}
+;screen.c,221 :: 		}
 L_end_save_timer:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _save_timer
 _reset_timer:
-;screen.c,218 :: 		void reset_timer() {
+;screen.c,223 :: 		void reset_timer() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,219 :: 		writebuff[0] = reset_msg[0];
+;screen.c,224 :: 		writebuff[0] = reset_msg[0];
 MOVW	R0, #lo_addr(_reset_msg+0)
 MOVT	R0, #hi_addr(_reset_msg+0)
 LDRB	R1, [R0, #0]
 MOVW	R0, #lo_addr(_writebuff+0)
 MOVT	R0, #hi_addr(_writebuff+0)
 STRB	R1, [R0, #0]
-;screen.c,220 :: 		while(!HID_Write(&writebuff,64));
+;screen.c,225 :: 		TFT_Write_Text("RESET", 100, 140);
+MOVW	R0, #lo_addr(?lstr4_screen+0)
+MOVT	R0, #hi_addr(?lstr4_screen+0)
+MOVS	R2, #140
+MOVS	R1, #100
+BL	_TFT_Write_Text+0
+;screen.c,226 :: 		while(!HID_Write(&writebuff,64));
 L_reset_timer27:
 MOVS	R1, #64
 MOVW	R0, #lo_addr(_writebuff+0)
@@ -637,92 +661,92 @@ BNE	L_reset_timer28
 IT	AL
 BAL	L_reset_timer27
 L_reset_timer28:
-;screen.c,221 :: 		}
+;screen.c,227 :: 		}
 L_end_reset_timer:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _reset_timer
 _update_time:
-;screen.c,223 :: 		void update_time() {
-;screen.c,224 :: 		times[0] = readbuff[0];
+;screen.c,229 :: 		void update_time() {
+;screen.c,230 :: 		times[0] = readbuff[0];
 MOVW	R0, #lo_addr(_readbuff+0)
 MOVT	R0, #hi_addr(_readbuff+0)
 LDRSH	R1, [R0, #0]
 MOVW	R0, #lo_addr(_times+0)
 MOVT	R0, #hi_addr(_times+0)
 STRH	R1, [R0, #0]
-;screen.c,225 :: 		}
+;screen.c,231 :: 		}
 L_end_update_time:
 BX	LR
 ; end of _update_time
 _lap_timer:
-;screen.c,227 :: 		void lap_timer() {
+;screen.c,233 :: 		void lap_timer() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,228 :: 		reset_timer();
+;screen.c,235 :: 		TFT_Write_Text("LAP", 100, 160);
+MOVW	R0, #lo_addr(?lstr5_screen+0)
+MOVT	R0, #hi_addr(?lstr5_screen+0)
+MOVS	R2, #160
+MOVS	R1, #100
+BL	_TFT_Write_Text+0
+;screen.c,236 :: 		reset_timer();
 BL	_reset_timer+0
-;screen.c,229 :: 		shift_timers(0);
+;screen.c,237 :: 		shift_timers(0);
 MOVS	R0, #0
 SXTH	R0, R0
 BL	_shift_timers+0
-;screen.c,230 :: 		start_timer();
+;screen.c,238 :: 		start_timer();
 BL	_start_timer+0
-;screen.c,231 :: 		}
+;screen.c,239 :: 		}
 L_end_lap_timer:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _lap_timer
 _main:
-;screen.c,233 :: 		void main(void) {
-;screen.c,235 :: 		Initialize();
+;screen.c,241 :: 		void main(void) {
+;screen.c,243 :: 		Initialize();
 BL	_Initialize+0
-;screen.c,237 :: 		while (1) {
+;screen.c,245 :: 		while (1) {
 L_main29:
-;screen.c,241 :: 		if (curr_state == STATE_RUNNING) {
-MOVW	R0, #lo_addr(_curr_state+0)
-MOVT	R0, #hi_addr(_curr_state+0)
-LDRSH	R0, [R0, #0]
-CMP	R0, #1
-IT	NE
-BNE	L_main31
-;screen.c,242 :: 		if (HID_Read()) { // this won't hang because we are using async interrupts
+;screen.c,248 :: 		if (HID_Read()) { // this won't hang because we are using async interrupts
 BL	_HID_Read+0
 CMP	R0, #0
 IT	EQ
-BEQ	L_main32
-;screen.c,244 :: 		TFT_Write_Text(readbuff, 200, 200);
-MOVS	R2, #200
-MOVS	R1, #200
-MOVW	R0, #lo_addr(_readbuff+0)
-MOVT	R0, #hi_addr(_readbuff+0)
-BL	_TFT_Write_Text+0
-;screen.c,245 :: 		update_time(); // check state or drop message
-BL	_update_time+0
-;screen.c,246 :: 		print_timers();
-BL	_print_timers+0
-;screen.c,247 :: 		}
-L_main32:
-;screen.c,248 :: 		} else {
-IT	AL
-BAL	L_main33
-L_main31:
+BEQ	L_main31
 ;screen.c,249 :: 		if (curr_state == STATE_RUNNING) {
 MOVW	R0, #lo_addr(_curr_state+0)
 MOVT	R0, #hi_addr(_curr_state+0)
 LDRSH	R0, [R0, #0]
 CMP	R0, #1
 IT	NE
+BNE	L_main32
+;screen.c,251 :: 		update_time(); // check state or drop message
+BL	_update_time+0
+;screen.c,252 :: 		print_timers();
+BL	_print_timers+0
+;screen.c,253 :: 		}
+L_main32:
+;screen.c,254 :: 		} else {
+IT	AL
+BAL	L_main33
+L_main31:
+;screen.c,255 :: 		if (curr_state == STATE_RUNNING) {
+MOVW	R0, #lo_addr(_curr_state+0)
+MOVT	R0, #hi_addr(_curr_state+0)
+LDRSH	R0, [R0, #0]
+CMP	R0, #1
+IT	NE
 BNE	L_main34
-;screen.c,250 :: 		if (check_pause()) {
+;screen.c,256 :: 		if (check_pause()) {
 BL	_check_pause+0
 CMP	R0, #0
 IT	EQ
 BEQ	L_main35
-;screen.c,251 :: 		pause_timer();
+;screen.c,257 :: 		pause_timer();
 BL	_pause_timer+0
-;screen.c,252 :: 		} else if (check_lap()) {
+;screen.c,258 :: 		} else if (check_lap()) {
 IT	AL
 BAL	L_main36
 L_main35:
@@ -730,11 +754,11 @@ BL	_check_lap+0
 CMP	R0, #0
 IT	EQ
 BEQ	L_main37
-;screen.c,253 :: 		lap_timer();
+;screen.c,259 :: 		lap_timer();
 BL	_lap_timer+0
-;screen.c,254 :: 		print_timers();
+;screen.c,260 :: 		print_timers();
 BL	_print_timers+0
-;screen.c,255 :: 		} else if (check_save()) {
+;screen.c,261 :: 		} else if (check_save()) {
 IT	AL
 BAL	L_main38
 L_main37:
@@ -742,15 +766,15 @@ BL	_check_save+0
 CMP	R0, #0
 IT	EQ
 BEQ	L_main39
-;screen.c,256 :: 		save_timer();
+;screen.c,262 :: 		save_timer();
 BL	_save_timer+0
-;screen.c,257 :: 		print_timers();
+;screen.c,263 :: 		print_timers();
 BL	_print_timers+0
-;screen.c,258 :: 		} // Here we can stop, lap, save or pause.
+;screen.c,264 :: 		} // Here we can stop, lap, save or pause.
 L_main39:
 L_main38:
 L_main36:
-;screen.c,259 :: 		} else if (curr_state == STATE_PAUSE) {
+;screen.c,265 :: 		} else if (curr_state == STATE_PAUSE) {
 IT	AL
 BAL	L_main40
 L_main34:
@@ -760,14 +784,14 @@ LDRSH	R0, [R0, #0]
 CMP	R0, #2
 IT	NE
 BNE	L_main41
-;screen.c,260 :: 		if (check_start()) {
+;screen.c,266 :: 		if (check_start()) {
 BL	_check_start+0
 CMP	R0, #0
 IT	EQ
 BEQ	L_main42
-;screen.c,261 :: 		start_timer();
+;screen.c,267 :: 		start_timer();
 BL	_start_timer+0
-;screen.c,262 :: 		} else if (check_lap()) {
+;screen.c,268 :: 		} else if (check_lap()) {
 IT	AL
 BAL	L_main43
 L_main42:
@@ -775,11 +799,11 @@ BL	_check_lap+0
 CMP	R0, #0
 IT	EQ
 BEQ	L_main44
-;screen.c,263 :: 		lap_timer();
+;screen.c,269 :: 		lap_timer();
 BL	_lap_timer+0
-;screen.c,264 :: 		print_timers();
+;screen.c,270 :: 		print_timers();
 BL	_print_timers+0
-;screen.c,265 :: 		} else if (check_save()) {
+;screen.c,271 :: 		} else if (check_save()) {
 IT	AL
 BAL	L_main45
 L_main44:
@@ -787,23 +811,48 @@ BL	_check_save+0
 CMP	R0, #0
 IT	EQ
 BEQ	L_main46
-;screen.c,266 :: 		save_timer();
+;screen.c,272 :: 		save_timer();
 BL	_save_timer+0
-;screen.c,267 :: 		print_timers();
+;screen.c,273 :: 		print_timers();
 BL	_print_timers+0
-;screen.c,268 :: 		} // Here we can start, save
+;screen.c,274 :: 		} else if (check_reset()) {
+IT	AL
+BAL	L_main47
 L_main46:
+BL	_check_reset+0
+CMP	R0, #0
+IT	EQ
+BEQ	L_main48
+;screen.c,275 :: 		TFT_Write_Text("USAO", 150, 100);
+MOVW	R0, #lo_addr(?lstr6_screen+0)
+MOVT	R0, #hi_addr(?lstr6_screen+0)
+MOVS	R2, #100
+MOVS	R1, #150
+BL	_TFT_Write_Text+0
+;screen.c,276 :: 		reset_timer();
+BL	_reset_timer+0
+;screen.c,277 :: 		times[0] = 0;
+MOVS	R1, #0
+SXTH	R1, R1
+MOVW	R0, #lo_addr(_times+0)
+MOVT	R0, #hi_addr(_times+0)
+STRH	R1, [R0, #0]
+;screen.c,278 :: 		print_timers();
+BL	_print_timers+0
+;screen.c,279 :: 		}// Here we can start, save
+L_main48:
+L_main47:
 L_main45:
 L_main43:
-;screen.c,269 :: 		}
+;screen.c,280 :: 		}
 L_main41:
 L_main40:
-;screen.c,270 :: 		}
+;screen.c,281 :: 		}
 L_main33:
-;screen.c,271 :: 		}
+;screen.c,282 :: 		}
 IT	AL
 BAL	L_main29
-;screen.c,272 :: 		}
+;screen.c,283 :: 		}
 L_end_main:
 L__main_end_loop:
 B	L__main_end_loop

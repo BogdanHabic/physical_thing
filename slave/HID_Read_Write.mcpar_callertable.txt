@@ -471,13 +471,13 @@ main
 			DCD_IsoOUTIncomplete_ISR
 			DCD_SessionRequest_ISR
 			DCD_OTG_ISR
-	TFT_Write_Text
 	update_time
 	print_timers
 	check_pause
 		Button
 			Delay_500us
 	pause_timer
+		TFT_Write_Text
 		HID_Write
 			USBD_HID_SendReport
 				DCD_EP_Tx
@@ -485,10 +485,13 @@ main
 	check_lap
 		Button
 	lap_timer
+		TFT_Write_Text
 		reset_timer
+			TFT_Write_Text
 			HID_Write
 		shift_timers
 		start_timer
+			TFT_Write_Text
 			HID_Write
 	check_save
 		Button
@@ -497,6 +500,10 @@ main
 	check_start
 		Button
 	start_timer
+	check_reset
+		Button
+	TFT_Write_Text
+	reset_timer
 USB0Interrupt
 	USB_Interrupt_Proc
 		USBD_OTG_ISR_Handler

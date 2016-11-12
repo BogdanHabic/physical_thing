@@ -81,9 +81,9 @@ void print_timers() {
 void Initialize() {
  int i;
  GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_0);
- GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_1);
- GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_2);
- GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_3);
+ GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_6);
+ GPIO_Digital_Input(&GPIOD_IDR, _GPIO_PINMASK_4);
+ GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_5);
  GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_4);
 
  TFT_Init_ILI9341_8bit(320, 240);
@@ -119,7 +119,7 @@ int check_lap() {
  return 0;
  }
 
- val = Button(&GPIOA_IDR, 1, 1, 1);
+ val = Button(&GPIOA_IDR, 6, 1, 1);
  if(val) prev_b =  2 ;
 
  return val;
@@ -131,7 +131,7 @@ int check_reset() {
  return 0;
  }
 
- val = Button(&GPIOA_IDR, 2, 1, 1);
+ val = Button(&GPIOD_IDR, 4, 1, 1);
  if(val) prev_b =  3 ;
 
  return val;
@@ -143,7 +143,7 @@ int check_pause() {
  return 0;
  }
 
- val = Button(&GPIOA_IDR, 3, 1, 1);
+ val = Button(&GPIOA_IDR, 5, 1, 1);
  if(val) prev_b =  4 ;
 
  return val;
@@ -163,13 +163,18 @@ int check_save() {
 
 void start_timer() {
  writebuff[0] = start_msg[0];
+ TFT_Write_Text("START", 100, 100);
  while(!HID_Write(&writebuff,64));
  curr_state =  1 ;
 }
 
 void pause_timer() {
+
  writebuff[0] = pause_msg[0];
+
+ TFT_Write_Text("PAUSE", 120, 120);
  while(!HID_Write(&writebuff,64));
+ curr_state =  2 ;
 }
 
 void save_timer() {
@@ -178,6 +183,7 @@ void save_timer() {
 
 void reset_timer() {
  writebuff[0] = reset_msg[0];
+ TFT_Write_Text("RESET", 100, 140);
  while(!HID_Write(&writebuff,64));
 }
 
@@ -186,6 +192,8 @@ void update_time() {
 }
 
 void lap_timer() {
+
+ TFT_Write_Text("LAP", 100, 160);
  reset_timer();
  shift_timers(0);
  start_timer();
@@ -198,11 +206,9 @@ void main(void) {
  while (1) {
 
 
-
- if (curr_state ==  1 ) {
  if (HID_Read()) {
+ if (curr_state ==  1 ) {
 
- TFT_Write_Text(readbuff, 200, 200);
  update_time();
  print_timers();
  }
@@ -225,6 +231,11 @@ void main(void) {
  print_timers();
  } else if (check_save()) {
  save_timer();
+ print_timers();
+ } else if (check_reset()) {
+ TFT_Write_Text("USAO", 150, 100);
+ reset_timer();
+ times[0] = 0;
  print_timers();
  }
  }

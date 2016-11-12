@@ -120,9 +120,9 @@ void print_timers() {
 void Initialize() {
     int i;
     GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_0); // Set PA0 as start
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_1); // Set PA1 as lap
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_2); // Set PA2 as reset
-    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_3); // Set PA3 as pause
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_6); // Set PA6 as lap
+    GPIO_Digital_Input(&GPIOD_IDR, _GPIO_PINMASK_4); // Set PD4 as reset
+    GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_5); // Set PA5 as pause
     GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_4); // Set PA4 as save
     
     TFT_Init_ILI9341_8bit(320, 240);
@@ -158,7 +158,7 @@ int check_lap() {
         return 0;
     }
     
-    val = Button(&GPIOA_IDR, 1, 1, 1);
+    val = Button(&GPIOA_IDR, 6, 1, 1);
     if(val) prev_b = B_LAP;
 
     return val;
@@ -170,7 +170,7 @@ int check_reset() {
         return 0;
     }
     
-    val = Button(&GPIOA_IDR, 2, 1, 1);
+    val = Button(&GPIOD_IDR, 4, 1, 1);
     if(val) prev_b = B_RESET;
 
     return val;
@@ -182,7 +182,7 @@ int check_pause() {
         return 0;
     }
 
-    val = Button(&GPIOA_IDR, 3, 1, 1);
+    val = Button(&GPIOA_IDR, 5, 1, 1);
     if(val) prev_b = B_PAUSE;
 
     return val;
@@ -202,13 +202,18 @@ int check_save() {
 
 void start_timer() {
     writebuff[0] = start_msg[0];
+    TFT_Write_Text("START", 100, 100);
     while(!HID_Write(&writebuff,64)); // Send the message
     curr_state = STATE_RUNNING;
 }
 
 void pause_timer() {
+//    TFT_Write_Text("USAO", 150, 100);
     writebuff[0] = pause_msg[0];
+
+    TFT_Write_Text("PAUSE", 120, 120);
     while(!HID_Write(&writebuff,64));
+    curr_state = STATE_PAUSE;
 }
 
 void save_timer() {
@@ -217,6 +222,7 @@ void save_timer() {
 
 void reset_timer() {
     writebuff[0] = reset_msg[0];
+    TFT_Write_Text("RESET", 100, 140);
     while(!HID_Write(&writebuff,64));
 }
 
@@ -225,6 +231,8 @@ void update_time() {
 }
 
 void lap_timer() {
+
+    TFT_Write_Text("LAP", 100, 160);
     reset_timer();
     shift_timers(0);
     start_timer();
@@ -237,11 +245,9 @@ void main(void) {
     while (1) {
         // call print_timers() inside this loop.
 
-
-        if (curr_state == STATE_RUNNING) {
-            if (HID_Read()) { // this won't hang because we are using async interrupts
+        if (HID_Read()) { // this won't hang because we are using async interrupts
+            if (curr_state == STATE_RUNNING) {
              // If we are not in a running state we just drop the messsage. @TODO: Check if we can skip HID_Read() all together.
-                TFT_Write_Text(readbuff, 200, 200);
                 update_time(); // check state or drop message
                 print_timers();
             }
@@ -265,7 +271,12 @@ void main(void) {
                 } else if (check_save()) {
                     save_timer();
                     print_timers();
-                } // Here we can start, save
+                } else if (check_reset()) {
+                    TFT_Write_Text("USAO", 150, 100);
+                    reset_timer();
+                    times[0] = 0;
+                    print_timers();
+                }// Here we can start, save
             }
         }
     }

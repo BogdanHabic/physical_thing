@@ -4,18 +4,17 @@ diagnostics: 166	123	Compiled Successfully	USBdsc.c
 diagnostics: 0	122	Compilation Started	screen.c
 hint: 0	1004	interrupt handler (USB0Interrupt at 0x0053)	screen.c
 warning: 134	1505	Suspicious pointer conversion	screen.c
-warning: 244	1505	Suspicious pointer conversion	screen.c
-hint: 234	1163	Variable 'cnt' has been declared, but not used	screen.c
-diagnostics: 272	123	Compiled Successfully	screen.c
+hint: 242	1163	Variable 'cnt' has been declared, but not used	screen.c
+diagnostics: 283	123	Compiled Successfully	screen.c
 hint: 91	1164	Variable 'h' has been eliminated by optimizer	screen.c
 hint: 91	1164	Variable 'm' has been eliminated by optimizer	screen.c
 hint: 91	1164	Variable 's' has been eliminated by optimizer	screen.c
 hint: 91	1164	Variable 'temp' has been eliminated by optimizer	screen.c
-diagnostics: 0	127	All files Compiled in 141 ms	 
+diagnostics: 0	127	All files Compiled in 140 ms	 
 hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
-hint: 0	1144	Static RAM (bytes): 1984   Dynamic RAM (bytes): 63549	Static RAM (bytes): 1984   Dynamic RAM (bytes): 63549
-hint: 0	1144	Used ROM (bytes): 34758 (13%)  Free ROM (bytes): 227386 (87%)	Used ROM (bytes): 34758 (13%)  Free ROM (bytes): 227386 (87%)
+hint: 0	1144	Static RAM (bytes): 2011   Dynamic RAM (bytes): 63521	Static RAM (bytes): 2011   Dynamic RAM (bytes): 63521
+hint: 0	1144	Used ROM (bytes): 35003 (13%)  Free ROM (bytes): 227141 (87%)	Used ROM (bytes): 35003 (13%)  Free ROM (bytes): 227141 (87%)
 diagnostics: 0	125	Project Linked Successfully	HID_Read_Write.mcpar
-diagnostics: 0	128	Linked in 812 ms	 
-diagnostics: 0	129	Project 'HID_Read_Write.mcpar' completed: 1187 ms	 
-diagnostics: 0	103	Finished successfully: 08 Nov 2016, 12:27:07	HID_Read_Write.mcpar
+diagnostics: 0	128	Linked in 797 ms	 
+diagnostics: 0	129	Project 'HID_Read_Write.mcpar' completed: 1172 ms	 
+diagnostics: 0	103	Finished successfully: 12 Nov 2016, 13:18:19	HID_Read_Write.mcpar
