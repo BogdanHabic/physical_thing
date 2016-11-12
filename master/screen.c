@@ -15,7 +15,7 @@
                       http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00220364.pdf
      Dev. Board:      EasyMx PRO v7 for STM32(R) ARM(R)
                       http://www.mikroe.com/easymx-pro/stm32/
-                      ac:Touch_Panel
+                   nel
      SW:              mikroC PRO for ARM
                       http://www.mikroe.com/mikroc/arm/
 
@@ -40,8 +40,8 @@ void USB0Interrupt() iv IVT_INT_OTG_FS{
   USB_Interrupt_Proc();
 }
 
-void Timer2_interrupt() iv IVT_INT_TIM2 {	// iv-> hendler za tajmerski prekid
-  TIM2_SR.UIF = 0;				//Kada se prekid desi, postavlja se fleg TIM2_SR.UIF
+void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski prekid
+  TIM2_SR.UIF = 0;                                //Kada se prekid desi, postavlja se fleg TIM2_SR.UIF
   if(curr_state == STATE_RUNNING) {
       seconds++;
   }
@@ -51,8 +51,8 @@ void Initialize() {
     RCC_APB1ENR.TIM2EN = 1;       // koristimo TIM2
     TIM2_CR1.CEN = 0;             // privremeno iskljuèujemo TIM2
     TIM2_PSC = 1098;              // podesavamo preskaler(tj dvobajtnu vrednost sa kojom se deli frekvencija tajmera(tj TIM2_ARR) )
-    TIM2_ARR = 65514;		// granica brojaèa – ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
-					//   65514/ 1098 = 59,66667 (tj 1 sekunda)
+    TIM2_ARR = 65514;                // granica brojaèa – ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
+                                        //   65514/ 1098 = 59,66667 (tj 1 sekunda)
     NVIC_IntEnable(IVT_INT_TIM2); // omoguæavamo prekid IVT_INT_TIM2
     TIM2_DIER.UIE = 1;            // omoguæavamo update prekidza TIM2
     TIM2_CR1.CEN = 1;             // ponovo ukljuèujemo TIM2

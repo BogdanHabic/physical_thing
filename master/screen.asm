@@ -11,8 +11,8 @@ ADD	SP, SP, #4
 BX	LR
 ; end of _USB0Interrupt
 _Timer2_interrupt:
-;screen.c,43 :: 		void Timer2_interrupt() iv IVT_INT_TIM2 {	// iv-> hendler za tajmerski prekid
-;screen.c,44 :: 		TIM2_SR.UIF = 0;				//Kada se prekid desi, postavlja se fleg TIM2_SR.UIF
+;screen.c,43 :: 		void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski prekid
+;screen.c,44 :: 		TIM2_SR.UIF = 0;                                //Kada se prekid desi, postavlja se fleg TIM2_SR.UIF
 MOVS	R1, #0
 SXTB	R1, R1
 MOVW	R0, #lo_addr(TIM2_SR+0)
@@ -58,7 +58,7 @@ MOVW	R1, #1098
 MOVW	R0, #lo_addr(TIM2_PSC+0)
 MOVT	R0, #hi_addr(TIM2_PSC+0)
 STR	R1, [R0, #0]
-;screen.c,54 :: 		TIM2_ARR = 65514;		// granica brojaèa – ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
+;screen.c,54 :: 		TIM2_ARR = 65514;                // granica brojaèa – ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
 MOVW	R1, #65514
 MOVW	R0, #lo_addr(TIM2_ARR+0)
 MOVT	R0, #hi_addr(TIM2_ARR+0)
