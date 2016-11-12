@@ -25,11 +25,50 @@ public class Main {
     }
 
     private static final int BUF_SIZE = 64;
+    
+    public static void debugSlave(HIDManager hidMgr) {
+    	try {
+            while (true) {
+            	HIDDeviceInfo[] infos = hidMgr.listDevices();
+            	
+            	if(infos == null) {
+            		continue;
+            	}
+            	
+                for (HIDDeviceInfo info : infos) {
+                    if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
+                        slave = info.open();
+                    }
+                }
+                
+                if (slave != null) {
+                    break;
+                }
+            }
+            
+            System.out.println("Start debug slave");
+
+            while (true) {
+                byte[] slaveMsg = readSlave();
+                
+                if(slaveMsg != null) {
+                    System.out.println((char)slaveMsg[0]);                	
+                }
+
+
+                Thread.sleep(20);
+            }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) throws IOException {
     	ClassPathLibraryLoader.loadNativeHIDLibrary();
         HIDManager hidMgr = HIDManager.getInstance();
 
+//        debugSlave(hidMgr);
+        
         try {
             while (true) {
             	HIDDeviceInfo[] infos = hidMgr.listDevices();
@@ -39,14 +78,13 @@ public class Main {
             	}
             	
                 for (HIDDeviceInfo info : infos) {
-//                    if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
-//                        slave = info.open();
-//                        break;
-//                    }
+                	System.out.println(info.getProduct_string());
+                    if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
+                        slave = info.open();
+                    }
 
                     if (info.getProduct_string().compareTo("HOST ID Library") == 0) {
                         master = info.open();
-                        break;
                     }
                 }
                 
@@ -54,17 +92,23 @@ public class Main {
                     break;
                 }
             }
+            
+            System.out.println("Start");
 
             while (true) {
-                String slaveMsg = readSlave();
+                byte[] slaveMsg = readSlave();
 
                 if (slaveMsg != null) {
                     processSlaveMessage(slaveMsg);
                 } else {
-                    String masterMsg = readMaster();
+                    byte[] masterMsg = readMaster();
+                    if(masterMsg != null) {
+//                    	System.out.println("Master message " + masterMsg);
+                    	sendToSlave(masterMsg);
+                    }
                 }
 
-                Thread.sleep(20);
+                Thread.sleep(100);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -82,37 +126,49 @@ public class Main {
         }
     }
 
-    private static void processSlaveMessage(String slaveMsg) {
-        char msg = slaveMsg.charAt(0);
-        sendToMaster(msg);
+    private static void processSlaveMessage(byte[] slaveMsg) {
+        sendToMaster((char)slaveMsg[0]);
     }
 
     private static void sendToMaster(char msg) {
-        String possibleMasterMsg = readMaster();
+        byte[] possibleMasterMsg = readMaster();
         writeToMaster(msg);
     }
+    
+    private static void sendToSlave(byte[] msg) {
+    	byte[] data = new byte[64];
+        data[0] = (byte) 0;
+        data[1] = msg[0];
+        data[2] = msg[1];
+        try {
+        	slave.write(data);
+//            System.out.println("SENT TO MASTER: " + );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    public static String readSlave() {
-        String slaveMsg = readHID("slave");
+    public static byte[] readSlave() {
+        byte[] slaveMsg = readHID("slave");
 
         if (slaveMsg != null) {
-            System.out.println("RECEIVED FROM SLAVE: " + slaveMsg);
+//            System.out.println("RECEIVED FROM SLAVE: " + (char)slaveMsg[0]);
         }
 
         return slaveMsg;
     }
 
-    public static String readMaster() {
-        String masterMsg = readHID("master");
+    public static byte[] readMaster() {
+        byte[] masterMsg = readHID("master");
 
         if (masterMsg != null) {
-            System.out.println("RECEIVED FROM MASTER: " + masterMsg);
+//            System.out.println("RECEIVED FROM MASTER: " + masterMsg);
         }
 
         return masterMsg;
     }
 
-    public static String readHID(String type) {
+    public static byte[] readHID(String type) {
         try {
             byte[] data = new byte[64];
             int read = 0;
@@ -127,13 +183,7 @@ public class Main {
                     break;
             }
             if (read > 0) {
-                String str = "";
-                for (int i = 0; i < read; i++) {
-                    if (data[i] != 0) {
-                        str += data[i];
-                    }
-                }
-                return str;
+                return data;
             } else {
                 return null;
             }
@@ -146,10 +196,11 @@ public class Main {
 
     public static void writeToMaster(char value) {
         byte[] data = new byte[64];
-        data[0] = (byte) 1;
+        data[0] = (byte) 0;
         data[1] = (byte) value;
         try {
-            System.out.println("SENT TO MASTER: " + master.write(data));
+        	master.write(data);
+//            System.out.println("SENT TO MASTER: " +);
         } catch (Exception e) {
             e.printStackTrace();
         }
