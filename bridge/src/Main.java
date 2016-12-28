@@ -67,8 +67,15 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
+    	SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Game game = new Game();
+			}
+		});
     	
-    	Game game = new Game();
     	
 			
     	ClassPathLibraryLoader.loadNativeHIDLibrary();
