@@ -182,6 +182,8 @@ void Start_TP() {
 }
 
 void Initialize() {
+    Xcoord = 0;
+    Ycoord = 0;
     Start_TP(); // Initialize touch panel
 
     TFT_Set_Pen(CL_AQUA, 3);
@@ -192,6 +194,29 @@ void Initialize() {
     HID_Enable(&readbuff,&writebuff);
 }
 
+void Process_TP_Up(unsigned int x, unsigned int y) {
+    //@TODO: Write to HID
+}
+
+void Process_TP_Down(unsigned int x, unsigned int y) {
+   //@TODO: Write to HID
+}
+
+void Check_TP() {
+    if (TP_TFT_Press_Detect()) {
+        // After a PRESS is detected read X-Y and convert it to Display dimensions space
+        if (TP_TFT_Get_Coordinates(&Xcoord, &Ycoord) == 0) {
+            if (PenDown == 0) {
+                PenDown = 1;
+                Process_TP_Down(Xcoord, Ycoord);
+            }
+        }
+    } else if (PenDown == 1) {
+        PenDown = 0;
+        Process_TP_Up(Xcoord, Ycoord);
+    }
+}
+
 void main(void) {
   Initialize();
 
@@ -200,7 +225,7 @@ void main(void) {
             draw_target();
             delete_target();
         } else {
-            //@TODO Check for a touch
+            Check_TP();
         }
     }
 }
