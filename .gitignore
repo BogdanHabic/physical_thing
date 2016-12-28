@@ -33,3 +33,8 @@
 *.su
 
 .DS_STORE
+
+tags
+slave/tags
+master/tags
+bridge/tags
