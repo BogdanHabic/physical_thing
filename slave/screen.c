@@ -46,7 +46,7 @@ sbit DriveY_Down at GPIOB_ODR.B0;
 bit          write_erase;
 char         pen_size;
 int readbuff[32];
-int writebuff[32];
+char writebuff[64];
 
 unsigned int Xcoord, Ycoord;
 const ADC_THRESHOLD = 750;
@@ -196,8 +196,10 @@ void Initialize() {
 
 void write_coords(int x, int y) {
     int i = 0;
-    writebuff[0] = x;
-    writebuff[1] = y;
+    for(i = 0; i < 64; i++) {
+            writebuff[i] = '\0';
+    }
+    sprintf(writebuff, "%d=%d", x, y);
     while(!HID_Write(&writebuff,64));
 }
 

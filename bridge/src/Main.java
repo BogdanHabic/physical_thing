@@ -4,17 +4,18 @@ import com.codeminders.hidapi.HIDDevice;
 import com.codeminders.hidapi.HIDDeviceInfo;
 import com.codeminders.hidapi.HIDManager;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class Main {
     public static HIDDevice slave = null;
-    public static HIDDevice master = null;
-    static final char start_msg = 'S';
-    static final char reset_msg = 'R';
-    static final char pause_msg = 'P';
+    
+    public static Game game = null;
 
     //mora da postoji hidapi-jni.dll na putanji za nativne
     //biblioteke za hidapi-1.1.jar
@@ -71,8 +72,7 @@ public class Main {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				Game game = new Game();
+				game = new Game();
 			}
 		});
     	
@@ -96,30 +96,20 @@ public class Main {
                     if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
                         slave = info.open();
                     }
-
-                    if (info.getProduct_string().compareTo("HOST ID Library") == 0) {
-                        master = info.open();
-                    }
                 }
                 
-                if (slave != null && master != null) {
+                if (slave != null) {
                     break;
                 }
             }
             
-          //  System.out.println("Start");
+            System.out.println("Start");
 
             while (true) {
                 byte[] slaveMsg = readSlave();
 
                 if (slaveMsg != null) {
                     processSlaveMessage(slaveMsg);
-                } else {
-                    byte[] masterMsg = readMaster();
-                    if(masterMsg != null) {
-//                    	System.out.println("Master message " + masterMsg);
-                    	sendToSlave(masterMsg);
-                    }
                 }
 
                 Thread.sleep(100);
@@ -130,9 +120,6 @@ public class Main {
             if (slave != null) {
                 slave.close();
             }
-            if (master != null) {
-                master.close();
-            }
 
             if(hidMgr != null) {
             	hidMgr.release();
@@ -141,12 +128,7 @@ public class Main {
     }
 
     private static void processSlaveMessage(byte[] slaveMsg) {
-        sendToMaster((char)slaveMsg[0]);
-    }
-
-    private static void sendToMaster(char msg) {
-        byte[] possibleMasterMsg = readMaster();
-        writeToMaster(msg);
+        //@TODO: Check targets here
     }
     
     private static void sendToSlave(byte[] msg) {
@@ -166,20 +148,16 @@ public class Main {
         byte[] slaveMsg = readHID("slave");
 
         if (slaveMsg != null) {
-//            System.out.println("RECEIVED FROM SLAVE: " + (char)slaveMsg[0]);
+        	String msg = new String(slaveMsg);
+        	String[] parts = msg.split("=");
+        	int x = Integer.parseInt(parts[0].trim());
+        	int y = Integer.parseInt(parts[1].trim());
+        	if(game != null) {
+        		game.check(x, y);
+        	}
         }
 
         return slaveMsg;
-    }
-
-    public static byte[] readMaster() {
-        byte[] masterMsg = readHID("master");
-
-        if (masterMsg != null) {
-//            System.out.println("RECEIVED FROM MASTER: " + masterMsg);
-        }
-
-        return masterMsg;
     }
 
     public static byte[] readHID(String type) {
@@ -190,10 +168,6 @@ public class Main {
                 case "slave":
                     slave.disableBlocking();
                     read = slave.read(data);
-                    break;
-                case "master":
-                    master.disableBlocking();
-                    read = master.read(data);
                     break;
             }
             if (read > 0) {
@@ -206,17 +180,5 @@ public class Main {
         }
 
         return null;
-    }
-
-    public static void writeToMaster(char value) {
-        byte[] data = new byte[64];
-        data[0] = (byte) 0;
-        data[1] = (byte) value;
-        try {
-        	master.write(data);
-//            System.out.println("SENT TO MASTER: " +);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

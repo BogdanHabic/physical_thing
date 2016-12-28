@@ -102,22 +102,22 @@ MOV	R0, R1
 LDRSH	R0, [R0, #0]
 CMP	R0, #-1
 IT	EQ
-BEQ	L__draw_target32
+BEQ	L__draw_target35
 CMP	R8, #-1
 IT	EQ
-BEQ	L__draw_target31
+BEQ	L__draw_target34
 CMP	R2, #1
 IT	EQ
-BEQ	L__draw_target30
+BEQ	L__draw_target33
 ; del end address is: 8 (R2)
 IT	AL
 BAL	L_draw_target2
 ; x end address is: 28 (R7)
 ; y end address is: 32 (R8)
 ; fake end address is: 12 (R3)
-L__draw_target32:
-L__draw_target31:
-L__draw_target30:
+L__draw_target35:
+L__draw_target34:
+L__draw_target33:
 ;screen.c,80 :: 		return;
 IT	AL
 BAL	L_end_draw_target
@@ -179,21 +179,21 @@ MOV	R0, R1
 LDRSH	R0, [R0, #0]
 CMP	R0, #-1
 IT	EQ
-BEQ	L__delete_target36
+BEQ	L__delete_target39
 CMP	R8, #-1
 IT	EQ
-BEQ	L__delete_target35
+BEQ	L__delete_target38
 CMP	R2, #0
 IT	EQ
-BEQ	L__delete_target34
+BEQ	L__delete_target37
 ; del end address is: 8 (R2)
 IT	AL
 BAL	L_delete_target7
 ; x end address is: 28 (R7)
 ; y end address is: 32 (R8)
-L__delete_target36:
-L__delete_target35:
-L__delete_target34:
+L__delete_target39:
+L__delete_target38:
+L__delete_target37:
 ;screen.c,100 :: 		return;
 IT	AL
 BAL	L_end_delete_target
@@ -230,12 +230,12 @@ STR	LR, [SP, #0]
 ;screen.c,108 :: 		writebuff[0] = x;
 MOVW	R2, #lo_addr(_writebuff+0)
 MOVT	R2, #hi_addr(_writebuff+0)
-STRH	R0, [R2, #0]
+STRB	R0, [R2, #0]
 ; x end address is: 0 (R0)
 ;screen.c,109 :: 		writebuff[1] = y;
-MOVW	R2, #lo_addr(_writebuff+2)
-MOVT	R2, #hi_addr(_writebuff+2)
-STRH	R1, [R2, #0]
+MOVW	R2, #lo_addr(_writebuff+1)
+MOVT	R2, #hi_addr(_writebuff+1)
+STRB	R1, [R2, #0]
 ; y end address is: 4 (R1)
 ;screen.c,111 :: 		while(!HID_Write(&writebuff,64)); // Send the message
 L_send_touch8:
@@ -608,43 +608,77 @@ _write_coords:
 ;screen.c,197 :: 		void write_coords(int x, int y) {
 ; y start address is: 4 (R1)
 ; x start address is: 0 (R0)
-SUB	SP, SP, #4
+SUB	SP, SP, #8
 STR	LR, [SP, #0]
 ; y end address is: 4 (R1)
 ; x end address is: 0 (R0)
 ; x start address is: 0 (R0)
 ; y start address is: 4 (R1)
 ;screen.c,198 :: 		int i = 0;
-;screen.c,199 :: 		writebuff[0] = x;
+;screen.c,199 :: 		for(i = 0; i < 64; i++) {
+; i start address is: 16 (R4)
+MOVS	R4, #0
+SXTH	R4, R4
+; x end address is: 0 (R0)
+; y end address is: 4 (R1)
+; i end address is: 16 (R4)
+STRH	R1, [SP, #4]
+SXTH	R1, R0
+LDRSH	R0, [SP, #4]
+L_write_coords18:
+; i start address is: 16 (R4)
+; y start address is: 0 (R0)
+; x start address is: 4 (R1)
+CMP	R4, #64
+IT	GE
+BGE	L_write_coords19
+;screen.c,200 :: 		writebuff[i] = '\0';
 MOVW	R2, #lo_addr(_writebuff+0)
 MOVT	R2, #hi_addr(_writebuff+0)
-STRH	R0, [R2, #0]
-; x end address is: 0 (R0)
-;screen.c,200 :: 		writebuff[1] = y;
-MOVW	R2, #lo_addr(_writebuff+2)
-MOVT	R2, #hi_addr(_writebuff+2)
-STRH	R1, [R2, #0]
-; y end address is: 4 (R1)
-;screen.c,201 :: 		while(!HID_Write(&writebuff,64));
-L_write_coords18:
+ADDS	R3, R2, R4
+MOVS	R2, #0
+STRB	R2, [R3, #0]
+;screen.c,199 :: 		for(i = 0; i < 64; i++) {
+ADDS	R4, R4, #1
+SXTH	R4, R4
+;screen.c,201 :: 		}
+; i end address is: 16 (R4)
+IT	AL
+BAL	L_write_coords18
+L_write_coords19:
+;screen.c,202 :: 		sprintf(writebuff, "%d=%d", x, y);
+MOVW	R3, #lo_addr(?lstr_5_screen+0)
+MOVT	R3, #hi_addr(?lstr_5_screen+0)
+MOVW	R2, #lo_addr(_writebuff+0)
+MOVT	R2, #hi_addr(_writebuff+0)
+PUSH	(R0)
+; y end address is: 0 (R0)
+PUSH	(R1)
+; x end address is: 4 (R1)
+PUSH	(R3)
+PUSH	(R2)
+BL	_sprintf+0
+ADD	SP, SP, #16
+;screen.c,203 :: 		while(!HID_Write(&writebuff,64));
+L_write_coords21:
 MOVS	R1, #64
 MOVW	R0, #lo_addr(_writebuff+0)
 MOVT	R0, #hi_addr(_writebuff+0)
 BL	_HID_Write+0
 CMP	R0, #0
 IT	NE
-BNE	L_write_coords19
+BNE	L_write_coords22
 IT	AL
-BAL	L_write_coords18
-L_write_coords19:
-;screen.c,202 :: 		}
+BAL	L_write_coords21
+L_write_coords22:
+;screen.c,204 :: 		}
 L_end_write_coords:
 LDR	LR, [SP, #0]
-ADD	SP, SP, #4
+ADD	SP, SP, #8
 BX	LR
 ; end of _write_coords
 _Process_TP_Up:
-;screen.c,204 :: 		void Process_TP_Up(unsigned int x, unsigned int y) {
+;screen.c,206 :: 		void Process_TP_Up(unsigned int x, unsigned int y) {
 ; y start address is: 4 (R1)
 ; x start address is: 0 (R0)
 SUB	SP, SP, #4
@@ -653,34 +687,34 @@ STR	LR, [SP, #0]
 ; x end address is: 0 (R0)
 ; x start address is: 0 (R0)
 ; y start address is: 4 (R1)
-;screen.c,205 :: 		write_coords((int)x, (int)y);
+;screen.c,207 :: 		write_coords((int)x, (int)y);
 SXTH	R1, R1
 ; y end address is: 4 (R1)
 SXTH	R0, R0
 ; x end address is: 0 (R0)
 BL	_write_coords+0
-;screen.c,206 :: 		}
+;screen.c,208 :: 		}
 L_end_Process_TP_Up:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _Process_TP_Up
 _Process_TP_Down:
-;screen.c,208 :: 		void Process_TP_Down(unsigned int x, unsigned int y) {
-;screen.c,210 :: 		}
+;screen.c,210 :: 		void Process_TP_Down(unsigned int x, unsigned int y) {
+;screen.c,212 :: 		}
 L_end_Process_TP_Down:
 BX	LR
 ; end of _Process_TP_Down
 _Check_TP:
-;screen.c,212 :: 		void Check_TP() {
+;screen.c,214 :: 		void Check_TP() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,213 :: 		if (TP_TFT_Press_Detect()) {
+;screen.c,215 :: 		if (TP_TFT_Press_Detect()) {
 BL	_TP_TFT_Press_Detect+0
 CMP	R0, #0
 IT	EQ
-BEQ	L_Check_TP20
-;screen.c,215 :: 		if (TP_TFT_Get_Coordinates(&Xcoord, &Ycoord) == 0) {
+BEQ	L_Check_TP23
+;screen.c,217 :: 		if (TP_TFT_Get_Coordinates(&Xcoord, &Ycoord) == 0) {
 MOVW	R1, #lo_addr(_Ycoord+0)
 MOVT	R1, #hi_addr(_Ycoord+0)
 MOVW	R0, #lo_addr(_Xcoord+0)
@@ -688,20 +722,20 @@ MOVT	R0, #hi_addr(_Xcoord+0)
 BL	_TP_TFT_Get_Coordinates+0
 CMP	R0, #0
 IT	NE
-BNE	L_Check_TP21
-;screen.c,216 :: 		if (PenDown == 0) {
+BNE	L_Check_TP24
+;screen.c,218 :: 		if (PenDown == 0) {
 MOVW	R0, #lo_addr(_PenDown+0)
 MOVT	R0, #hi_addr(_PenDown+0)
 LDRB	R0, [R0, #0]
 CMP	R0, #0
 IT	NE
-BNE	L_Check_TP22
-;screen.c,217 :: 		PenDown = 1;
+BNE	L_Check_TP25
+;screen.c,219 :: 		PenDown = 1;
 MOVS	R1, #1
 MOVW	R0, #lo_addr(_PenDown+0)
 MOVT	R0, #hi_addr(_PenDown+0)
 STRB	R1, [R0, #0]
-;screen.c,218 :: 		Process_TP_Down(Xcoord, Ycoord);
+;screen.c,220 :: 		Process_TP_Down(Xcoord, Ycoord);
 MOVW	R0, #lo_addr(_Ycoord+0)
 MOVT	R0, #hi_addr(_Ycoord+0)
 LDRH	R1, [R0, #0]
@@ -709,26 +743,26 @@ MOVW	R0, #lo_addr(_Xcoord+0)
 MOVT	R0, #hi_addr(_Xcoord+0)
 LDRH	R0, [R0, #0]
 BL	_Process_TP_Down+0
-;screen.c,219 :: 		}
-L_Check_TP22:
-;screen.c,220 :: 		}
-L_Check_TP21:
-;screen.c,221 :: 		} else if (PenDown == 1) {
+;screen.c,221 :: 		}
+L_Check_TP25:
+;screen.c,222 :: 		}
+L_Check_TP24:
+;screen.c,223 :: 		} else if (PenDown == 1) {
 IT	AL
-BAL	L_Check_TP23
-L_Check_TP20:
+BAL	L_Check_TP26
+L_Check_TP23:
 MOVW	R0, #lo_addr(_PenDown+0)
 MOVT	R0, #hi_addr(_PenDown+0)
 LDRB	R0, [R0, #0]
 CMP	R0, #1
 IT	NE
-BNE	L_Check_TP24
-;screen.c,222 :: 		PenDown = 0;
+BNE	L_Check_TP27
+;screen.c,224 :: 		PenDown = 0;
 MOVS	R1, #0
 MOVW	R0, #lo_addr(_PenDown+0)
 MOVT	R0, #hi_addr(_PenDown+0)
 STRB	R1, [R0, #0]
-;screen.c,223 :: 		Process_TP_Up(Xcoord, Ycoord);
+;screen.c,225 :: 		Process_TP_Up(Xcoord, Ycoord);
 MOVW	R0, #lo_addr(_Ycoord+0)
 MOVT	R0, #hi_addr(_Ycoord+0)
 LDRH	R1, [R0, #0]
@@ -736,42 +770,42 @@ MOVW	R0, #lo_addr(_Xcoord+0)
 MOVT	R0, #hi_addr(_Xcoord+0)
 LDRH	R0, [R0, #0]
 BL	_Process_TP_Up+0
-;screen.c,224 :: 		}
-L_Check_TP24:
-L_Check_TP23:
-;screen.c,225 :: 		}
+;screen.c,226 :: 		}
+L_Check_TP27:
+L_Check_TP26:
+;screen.c,227 :: 		}
 L_end_Check_TP:
 LDR	LR, [SP, #0]
 ADD	SP, SP, #4
 BX	LR
 ; end of _Check_TP
 _main:
-;screen.c,227 :: 		void main(void) {
-;screen.c,228 :: 		Initialize();
+;screen.c,229 :: 		void main(void) {
+;screen.c,230 :: 		Initialize();
 BL	_Initialize+0
-;screen.c,230 :: 		while (1) {
-L_main25:
-;screen.c,231 :: 		if (HID_Read()) { // this won't hang because we are using async interrupts
+;screen.c,232 :: 		while (1) {
+L_main28:
+;screen.c,233 :: 		if (HID_Read()) { // this won't hang because we are using async interrupts
 BL	_HID_Read+0
 CMP	R0, #0
 IT	EQ
-BEQ	L_main27
-;screen.c,232 :: 		draw_target();
+BEQ	L_main30
+;screen.c,234 :: 		draw_target();
 BL	_draw_target+0
-;screen.c,233 :: 		delete_target();
+;screen.c,235 :: 		delete_target();
 BL	_delete_target+0
-;screen.c,234 :: 		} else {
+;screen.c,236 :: 		} else {
+IT	AL
+BAL	L_main31
+L_main30:
+;screen.c,237 :: 		Check_TP();
+BL	_Check_TP+0
+;screen.c,238 :: 		}
+L_main31:
+;screen.c,239 :: 		}
 IT	AL
 BAL	L_main28
-L_main27:
-;screen.c,235 :: 		Check_TP();
-BL	_Check_TP+0
-;screen.c,236 :: 		}
-L_main28:
-;screen.c,237 :: 		}
-IT	AL
-BAL	L_main25
-;screen.c,238 :: 		}
+;screen.c,240 :: 		}
 L_end_main:
 L__main_end_loop:
 B	L__main_end_loop

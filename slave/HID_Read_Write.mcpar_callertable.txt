@@ -524,6 +524,22 @@ main
 		Process_TP_Down
 		Process_TP_Up
 			write_coords
+				sprintf
+					_doprntf
+						isdigit
+						_Compare_FP
+						scale
+							_Mul_FP
+						_Mul_FP
+						_Div_FP
+						_FloatToUnsignedIntegral
+							_FloatToSignedIntegral
+						_UnsignedIntegralToFloat
+						_Sub_FP
+						_Add_FP
+						fround
+							_Mul_FP
+						_FloatToSignedIntegral
 				HID_Write
 					USBD_HID_SendReport
 						DCD_EP_Tx
