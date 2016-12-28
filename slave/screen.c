@@ -175,10 +175,10 @@ void Start_TP() {
   Calibrate();
   TFT_Fill_Screen(0);
 
-  InitializeObjects();
-  display_width = Screen2.Width;
-  display_height = Screen2.Height;
-  DrawScreen(&Screen2);
+//  InitializeObjects();
+//  display_width = Screen2.Width;
+//  display_height = Screen2.Height;
+//  DrawScreen(&Screen2);
 }
 
 void Initialize() {
@@ -194,12 +194,19 @@ void Initialize() {
     HID_Enable(&readbuff,&writebuff);
 }
 
+void write_coords(int x, int y) {
+    int i = 0;
+    writebuff[0] = x;
+    writebuff[1] = y;
+    while(!HID_Write(&writebuff,64));
+}
+
 void Process_TP_Up(unsigned int x, unsigned int y) {
-    //@TODO: Write to HID
+     write_coords((int)x, (int)y);
 }
 
 void Process_TP_Down(unsigned int x, unsigned int y) {
-   //@TODO: Write to HID
+    //@TODO: Handle down
 }
 
 void Check_TP() {

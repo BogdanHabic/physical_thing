@@ -1,4 +1,4 @@
-#line 1 "C:/Users/lazar/Desktop/physical_thing-master/slave/USBdsc.c"
+#line 1 "C:/Users/lazar/Desktop/physical_thing/slave/USBdsc.c"
 const unsigned int USB_VENDOR_ID = 0x1234;
 const unsigned int USB_PRODUCT_ID = 0x0001;
 const char USB_SELF_POWER = 0x80;

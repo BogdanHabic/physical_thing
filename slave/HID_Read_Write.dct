@@ -6,6 +6,23 @@ __flash_size
 __fzins
 __genexcept
 __system_clock_in_khz
+_adc_channel_0
+_adc_channel_1
+_adc_channel_10
+_adc_channel_11
+_adc_channel_12
+_adc_channel_13
+_adc_channel_14
+_adc_channel_15
+_adc_channel_2
+_adc_channel_3
+_adc_channel_4
+_adc_channel_5
+_adc_channel_6
+_adc_channel_7
+_adc_channel_8
+_adc_channel_9
+_adc_channel_all
 _add_dp
 _add_fp
 _compare_dp
@@ -356,14 +373,19 @@ active8_nvic_iabr1_bit
 active9
 active9_bit
 active9_nvic_iabr1_bit
+adc_get_sample_ptr
+adc_set_input_channel
+adc_threshold
 adc1_cr1
 adc1_cr1bits
 adc1_cr2
 adc1_cr2bits
 adc1_dr
 adc1_drbits
+adc1_get_sample
 adc1_htr
 adc1_htrbits
+adc1_init
 adc1_jdr1
 adc1_jdr1bits
 adc1_jdr2
@@ -384,6 +406,7 @@ adc1_jsqr
 adc1_jsqrbits
 adc1_ltr
 adc1_ltrbits
+adc1_read
 adc1_smpr1
 adc1_smpr1bits
 adc1_smpr2
@@ -408,8 +431,10 @@ adc2_cr2
 adc2_cr2bits
 adc2_dr
 adc2_drbits
+adc2_get_sample
 adc2_htr
 adc2_htrbits
+adc2_init
 adc2_jdr1
 adc2_jdr1bits
 adc2_jdr2
@@ -430,6 +455,7 @@ adc2_jsqr
 adc2_jsqrbits
 adc2_ltr
 adc2_ltrbits
+adc2_read
 adc2_smpr1
 adc2_smpr1bits
 adc2_smpr2
@@ -1917,7 +1943,6 @@ busy
 busy
 busy_bit
 busy_i2c2_sr2_bit
-button
 cal
 cal
 cal
@@ -1938,6 +1963,7 @@ cal5
 cal5_bit
 cal6
 cal6_bit
+calibrate
 can1_btr
 can1_btrbits
 can1_esr
@@ -3321,11 +3347,7 @@ chdis_usb_otg_host_fs_hcchar4_bit
 chdis_usb_otg_host_fs_hcchar5_bit
 chdis_usb_otg_host_fs_hcchar6_bit
 chdis_usb_otg_host_fs_hcchar7_bit
-check_lap
-check_pause
-check_reset
-check_save
-check_start
+check_tp
 chena
 chena
 chena
@@ -4611,7 +4633,6 @@ ctsie_usart3_cr3_bit
 ctxpkt
 ctxpkt
 ctxpkt_bit
-curr_state
 current
 current0
 current0_bit
@@ -7280,7 +7301,7 @@ delay_5ms
 delay_80us
 delay_8ms
 delay_cyc
-delay10ms
+delete_target
 dev_id
 dev_id0
 dev_id0_bit
@@ -8167,6 +8188,11 @@ dr9_bit
 dr9_crc_dr_bit
 dr9_spi2_dr_bit
 dr9_spi3_dr_bit
+draw_target
+drivex_left
+drivex_right
+drivey_down
+drivey_up
 dsl
 dsl0
 dsl0_bit
@@ -19362,6 +19388,8 @@ ineptxsa9
 ineptxsa9_bit
 ineptxsa9_usb_otg_global_fs_dieptxf2_bit
 ineptxsa9_usb_otg_global_fs_dieptxf3_bit
+init_adc
+init_mcu
 initialize
 inrq
 inrq
@@ -20704,7 +20732,6 @@ l2_bit
 l3
 l3_adc2_sqr1_bit
 l3_bit
-lap_timer
 last
 last
 last
@@ -24743,8 +24770,6 @@ pa9_dma2_cpar7_bit
 pam
 pam
 pam_bit
-pause_msg
-pause_timer
 pbcurrenthuffsymboltable
 pbcurrenthuffsymlentable
 pbl
@@ -24868,6 +24893,7 @@ pena_bit
 penchng
 penchng
 penchng_bit
+pendown
 pendstclr
 pendstclr
 pendstclr_bit
@@ -25499,7 +25525,6 @@ prediv23_bit
 pres
 pres
 pres_bit
-prev_b
 prftbe
 prftbe
 prftbe_bit
@@ -25615,7 +25640,6 @@ prigroup1
 prigroup1_bit
 prigroup2
 prigroup2_bit
-print_timers
 prlh
 prlh0
 prlh0_bit
@@ -25658,6 +25682,8 @@ prll8
 prll8_bit
 prll9
 prll9_bit
+process_tp_down
+process_tp_up
 product_id
 product_id0
 product_id0_bit
@@ -26351,8 +26377,6 @@ reset_
 reset_bit
 reset_can1_mcr_bit
 reset_crc_cr_bit
-reset_msg
-reset_timer
 restoreinterrupts
 retobase
 retobase
@@ -27059,7 +27083,6 @@ samp
 samp
 samp_bit
 samp_can1_msr_bit
-save_timer
 sb
 sb
 sb
@@ -27143,6 +27166,10 @@ secie_bit
 sedet
 sedet
 sedet_bit
+send_touch
+set_brush_for_delete
+set_brush_for_draw
+set_brush_for_fake_draw
 set_fosc_khz
 setena
 setena
@@ -27352,7 +27379,6 @@ sginak_bit
 sgonak
 sgonak
 sgonak_bit
-shift_timers
 silm
 silm
 silm
@@ -28216,8 +28242,7 @@ start
 start
 start_bit
 start_i2c2_cr1_bit
-start_msg
-start_timer
+start_tp
 stid
 stid
 stid
@@ -29982,8 +30007,6 @@ timeout
 timeout
 timeout_bit
 timeout_i2c2_sr1_bit
-timers_shifted
-times
 tjtie
 tjtie
 tjtie_bit
@@ -30032,6 +30055,16 @@ tom
 tom_bit
 top_to_bottom
 toupper
+tp_tft_calibrate_max
+tp_tft_calibrate_min
+tp_tft_get_calibration_consts
+tp_tft_get_coordinates
+tp_tft_init
+tp_tft_press_detect
+tp_tft_rotate_180
+tp_tft_set_adc_threshold
+tp_tft_set_calibration_consts
+tp_tft_set_default_mode
 tpal
 tpal
 tpal_bit
@@ -31159,7 +31192,6 @@ uif_tim7_sr_bit
 unalign_trp
 unalign_trp
 unalign_trp_bit
-update_time
 upfd
 upfd
 upfd_bit
@@ -31745,6 +31777,7 @@ wkupint_bit
 wprevx
 wprevy
 wrestartinterval
+write_coords
 write_erase
 writebuff
 wrp
@@ -31838,7 +31871,7 @@ wwdgrstf
 wwdgrstf_bit
 wwidth
 wworkbits
-x_coord
+xcoord
 xfrc
 xfrc
 xfrc
@@ -32208,7 +32241,7 @@ xfrsiz9_usb_otg_host_fs_hctsiz4_bit
 xfrsiz9_usb_otg_host_fs_hctsiz5_bit
 xfrsiz9_usb_otg_host_fs_hctsiz6_bit
 xfrsiz9_usb_otg_host_fs_hctsiz7_bit
-y_coord
+ycoord
 zqpd
 zqpd
 zqpd_bit
