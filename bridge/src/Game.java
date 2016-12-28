@@ -72,10 +72,17 @@ public class Game extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				ArrayList<Cyrcle> remove = new ArrayList<>();
 				for(Cyrcle c : targets) {
+					remove = new ArrayList<>();
 					c.time--;
+					if(c.time <= 0) {
+						remove.add(c);
+						repaint();
+					}
 				}
-				repaint();
+				targets.removeAll(remove);
+				remove.clear();	
 			}
 		};
 		new Timer(1000, thread).start();
@@ -114,6 +121,4 @@ public class Game extends JFrame {
 			this.real = real;
 		}
 	}
-	
-
 }
