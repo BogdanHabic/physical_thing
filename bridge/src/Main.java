@@ -6,6 +6,9 @@ import com.codeminders.hidapi.HIDManager;
 
 import java.io.IOException;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 public class Main {
     public static HIDDevice slave = null;
     public static HIDDevice master = null;
@@ -64,6 +67,10 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
+    	
+    	Game game = new Game();
+    	
+			
     	ClassPathLibraryLoader.loadNativeHIDLibrary();
         HIDManager hidMgr = HIDManager.getInstance();
 
@@ -78,7 +85,7 @@ public class Main {
             	}
             	
                 for (HIDDeviceInfo info : infos) {
-                	System.out.println(info.getProduct_string());
+                	//System.out.println(info.getProduct_string());
                     if (info.getProduct_string().compareTo("SLAVEID Library") == 0) {
                         slave = info.open();
                     }
@@ -93,7 +100,7 @@ public class Main {
                 }
             }
             
-            System.out.println("Start");
+          //  System.out.println("Start");
 
             while (true) {
                 byte[] slaveMsg = readSlave();

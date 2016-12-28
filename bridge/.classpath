@@ -3,5 +3,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/hidapi-1.1"/>
+	<classpathentry kind="lib" path="/hidtest/lib/hidapi-1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="hidtest/native"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="out/production/bridge"/>
 </classpath>
