@@ -14,14 +14,14 @@ _set_brush_for_draw:
 ;screen.c,59 :: 		void set_brush_for_draw() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,60 :: 		TFT_Set_Brush(1, CL_FUCHSIA, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
+;screen.c,60 :: 		TFT_Set_Brush(1, CL_GREEN, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
 MOVW	R1, #4095
 MOVW	R0, #4095
 PUSH	(R1)
 PUSH	(R0)
 MOVS	R3, #1
 MOVS	R2, #0
-MOVW	R1, #63519
+MOVW	R1, #1024
 MOVS	R0, #1
 BL	_TFT_Set_Brush+0
 ADD	SP, SP, #8
@@ -35,14 +35,14 @@ _set_brush_for_fake_draw:
 ;screen.c,63 :: 		void set_brush_for_fake_draw() {
 SUB	SP, SP, #4
 STR	LR, [SP, #0]
-;screen.c,64 :: 		TFT_Set_Brush(1, CL_BLACK, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
+;screen.c,64 :: 		TFT_Set_Brush(1, CL_RED, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
 MOVW	R1, #4095
 MOVW	R0, #4095
 PUSH	(R1)
 PUSH	(R0)
 MOVS	R3, #1
 MOVS	R2, #0
-MOVW	R1, #0
+MOVW	R1, #63488
 MOVS	R0, #1
 BL	_TFT_Set_Brush+0
 ADD	SP, SP, #8

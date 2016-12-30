@@ -30,11 +30,11 @@ void USB0Interrupt() iv IVT_INT_OTG_FS{
 }
 
 void set_brush_for_draw() {
- TFT_Set_Brush(1, CL_FUCHSIA, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
+ TFT_Set_Brush(1, CL_GREEN, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
 }
 
 void set_brush_for_fake_draw() {
- TFT_Set_Brush(1, CL_BLACK, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
+ TFT_Set_Brush(1, CL_RED, 0, LEFT_TO_RIGHT, CL_AQUA, CL_AQUA);
 }
 
 void set_brush_for_delete() {

@@ -23,7 +23,7 @@ public class Game extends JFrame {
 	public Game() {
 		
 		targets = new ArrayList<>();
-		setTitle("Target Practise");
+		setTitle("Target Practise: 0");
 		setSize(new Dimension(320, 240));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -42,9 +42,13 @@ public class Game extends JFrame {
 				// TODO Auto-generated method stub
 				if(e.getButton() == MouseEvent.BUTTON1){
 					targets.add(new Cyrcle(e.getX(), e.getY(), true));
+					
+					Main.drawRealTarget(e.getX(), e.getY());
 				}
 				if(e.getButton() == MouseEvent.BUTTON3){
 					targets.add(new Cyrcle(e.getX(), e.getY(), false));
+					
+					Main.drawFakeTarget(e.getX(), e.getY());
 				}
 				repaint();
 			}
@@ -82,6 +86,10 @@ public class Game extends JFrame {
 					}
 				}
 				targets.removeAll(remove);
+				
+				for(Cyrcle cc : remove) {
+					Main.deleteTarget(cc.x, cc.y);
+				}
 			}
 		};
 		new Timer(1000, thread).start();
@@ -117,8 +125,13 @@ public class Game extends JFrame {
 			remove.add(c);
 		}
 		targets.removeAll(remove);
+		
+		for(Cyrcle cc : remove) {
+			Main.deleteTarget(cc.x, cc.y);
+		}
+		
 		repaint();
-		System.out.println(points);
+		setTitle("Target Practise: " + points);
 	}
 	
 	public class Cyrcle {
@@ -137,13 +150,7 @@ public class Game extends JFrame {
 		}
 		
 		public boolean contains(int x, int y) {
-			Ellipse2D ell = new Ellipse2D(x - 20, y - 20, 40, 40);
-			
-			System.out.println(x);
-			System.out.println(y);
-			System.out.println(ell.x+20);
-			System.out.println(ell.y+20);
-			System.out.println(ell.contains(x, y));
+			Ellipse2D ell = new Ellipse2D(this.x - 20, this.y - 20, 40, 40);
 			
 			return ell.contains(x,  y);
 		}

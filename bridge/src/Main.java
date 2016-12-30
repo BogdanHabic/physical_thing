@@ -131,11 +131,26 @@ public class Main {
         //@TODO: Check targets here
     }
     
-    private static void sendToSlave(byte[] msg) {
+    public static void drawRealTarget(int x, int y) {
+    	sendToSlave(x, y, 0, 0);
+    }
+    
+    public static void drawFakeTarget(int x, int y) {
+    	sendToSlave(x, y, 0, 1);
+    }
+    
+    public static void deleteTarget(int x, int y) {
+    	sendToSlave(x, y, 1, 0);
+    }
+    
+    public static void sendToSlave(int x, int y, int del, int fake) {
     	byte[] data = new byte[64];
         data[0] = (byte) 0;
-        data[1] = msg[0];
-        data[2] = msg[1];
+        data[1] = (byte) ((short)x);
+        data[3] = (byte) ((short)y);
+        data[5] = (byte) ((short)del);
+        data[7] = (byte) ((short)fake);
+        
         try {
         	slave.write(data);
 //            System.out.println("SENT TO MASTER: " + );
@@ -152,6 +167,7 @@ public class Main {
         	String[] parts = msg.split("=");
         	int x = Integer.parseInt(parts[0].trim());
         	int y = Integer.parseInt(parts[1].trim());
+
         	if(game != null) {
         		game.check(x, y);
         	}

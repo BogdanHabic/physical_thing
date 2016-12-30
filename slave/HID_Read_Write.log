@@ -5,11 +5,11 @@ diagnostics: 0	122	Compilation Started	screen.c
 hint: 0	1004	interrupt handler (USB0Interrupt at 0x0053)	screen.c
 warning: 194	1505	Suspicious pointer conversion	screen.c
 diagnostics: 240	123	Compiled Successfully	screen.c
-diagnostics: 0	127	All files Compiled in 172 ms	 
+diagnostics: 0	127	All files Compiled in 140 ms	 
 hint: 0	1144	Used RX: 16 (100%)   Free RX: 0 (0%)	Used RX: 16 (100%)   Free RX: 0 (0%)
 hint: 0	1144	Static RAM (bytes): 2065   Dynamic RAM (bytes): 63468	Static RAM (bytes): 2065   Dynamic RAM (bytes): 63468
 hint: 0	1144	Used ROM (bytes): 39785 (15%)  Free ROM (bytes): 222359 (85%)	Used ROM (bytes): 39785 (15%)  Free ROM (bytes): 222359 (85%)
 diagnostics: 0	125	Project Linked Successfully	HID_Read_Write.mcpar
-diagnostics: 0	128	Linked in 813 ms	 
-diagnostics: 0	129	Project 'HID_Read_Write.mcpar' completed: 1235 ms	 
-diagnostics: 0	103	Finished successfully: 28 Dec 2016, 18:45:50	HID_Read_Write.mcpar
+diagnostics: 0	128	Linked in 1000 ms	 
+diagnostics: 0	129	Project 'HID_Read_Write.mcpar' completed: 1375 ms	 
+diagnostics: 0	103	Finished successfully: 30 Dec 2016, 11:32:39	HID_Read_Write.mcpar
