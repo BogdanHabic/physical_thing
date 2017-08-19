@@ -1,0 +1,54 @@
+sbit TFT_RST at GPIOE_ODR.B8;
+sbit TFT_RS at GPIOE_ODR.B12;
+sbit TFT_CS at GPIOE_ODR.B15;
+sbit TFT_RD at GPIOE_ODR.B10;
+sbit TFT_WR at GPIOE_ODR.B11;
+sbit TFT_BLED at GPIOE_ODR.B9;
+
+char vreme[20];
+int sekunde = 0;
+//int minuti = 0;
+//int sati = 0;
+
+void Timer2_interrupt() iv IVT_INT_TIM2 {	// iv-> hendler za tajmerski prekid
+  TIM2_SR.UIF = 0;				//Kada se prekid desi, postavlja se fleg TIM2_SR.UIF 
+  sekunde++; 
+	/* if(sekunde == 60){				//koji obeležavataj dogaðaj. Hendler uvek mora da resetuje taj fleg. 
+		sekunde = 0;
+		minuti++;
+	  }
+	  else 
+		sekunde++;
+	  if(minuti <60)
+		minuti++;
+	  else{
+		sati++;
+		minuti = 0;
+	  }
+	  if(sati == 24)
+		sati = 0;
+	  sati++;
+	  */
+}
+
+void main() {
+TFT_Init_ILI9341_8bit(320, 240);
+  GPIO_Digital_Input(&GPIOA_IDR,_GPIO_PINMASK_0);
+
+  RCC_APB1ENR.TIM2EN = 1;       // koristimo TIM2
+  TIM2_CR1.CEN = 0;             // privremeno iskljuèujemo TIM2
+  TIM2_PSC = 1098;              // podesavamo preskaler(tj dvobajtnu vrednost sa kojom se deli frekvencija tajmera(tj TIM2_ARR) )
+  TIM2_ARR = 65514;		// granica brojaèa – ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
+					//   65514/ 1098 = 59,66667 (tj 1 sekunda)
+  NVIC_IntEnable(IVT_INT_TIM2); // omoguæavamo prekid IVT_INT_TIM2
+  TIM2_DIER.UIE = 1;            // omoguæavamo update prekidza TIM2
+  TIM2_CR1.CEN = 1;             // ponovo ukljuèujemo TIM2
+
+  while(1){
+  	if(Button(&GPIOA_IDR, 0, 1, 1)){			
+  		//sprintf(vreme, "VREME JE : %d:%d:%d", sati, minuti, sekunde);
+		sprintf(vreme, "VREME JE : %d ", sekunde);
+  		TFT_Write_Text(vreme, 75, 110);					
+  	}
+  }
+}
