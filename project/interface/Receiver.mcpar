@@ -1,0 +1,76 @@
+[DEVICE]
+Name=STM32F107VC
+Clock=72000000
+[MEMORY_MODEL]
+Value=0
+[BUILD_TYPE]
+Value=0
+[ACTIVE_TAB]
+Value=Receiver.c
+[USE_EEPROM]
+Value=0
+[EEPROM_DEFINITION]
+Value=
+[USE_HEAP]
+Value=0
+[HEAP_SIZE]
+Value=2000
+[FILES]
+Count=5
+File0=Receiver.c
+File1=ReadWrite_Routines.c
+File2=Reset_Routines.c
+File3=Misc_Routines.c
+File4=Init_Routines.c
+[BINARIES]
+Count=0
+[IMAGES]
+Count=1
+File0=..\BEE_Click.jpg
+ActiveImageIndex=0
+[OPENED_FILES]
+Count=1
+File0=Receiver.c
+[EEPROM]
+Count=0
+[ACTIVE_COMMENTS_FILES]
+Count=1
+File0=BEE_Click.xml
+[OTHER_FILES]
+Count=0
+[SEARCH_PATH]
+Count=10
+Path0=C:\Program Files\Mikroelektronika\mikroC PRO for ARM\defs\
+Path1=Z:\Materijal\2013\8. Semestar\Sistemi u realnom vremenu\Vezbe\Vezba 7\BEE primer\Receiver\
+Path2=C:\Program Files\Mikroelektronika\mikroC PRO for ARM\Uses\ST M3\
+Path3=Z:\Public\Materijal\2013\8. Semestar\Sistemi u realnom vremenu\Vezbe\Vezba 7\BEE primer\Receiver\
+Path4=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\defs\
+Path5=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\ST M3\
+Path6=D:\Download\1347955933_bee_click___exam_mikroc_arm\mikroC PRO for ARM\EasyMX PRO v7 for STM32 - STM32F107VC\Receiver\
+Path7=D:\Download\1347955933_bee_click___exam_mikroc_arm\mikroC PRO for ARM\EasyMX PRO v7 for STM32 - STM32F107VC\
+Path8=Z:\Public\Materijal\2013\8. Semestar\Sistemi u realnom vremenu\Vezbe\Vezba 7\BEE primer\
+Path9=Z:\Materijal\2013\8. Semestar\Sistemi u realnom vremenu\Vezbe\Vezba 7\BEE primer\
+[HEADER_PATH]
+Count=0
+[HEADERS]
+Count=0
+[PLDS]
+Count=0
+[Useses]
+Count=8
+File0=SPI
+File1=UART
+File2=Conversions
+File3=Lcd
+File4=Lcd_Constants
+File5=TFT
+File6=TFT_Defs
+File7=TFT_TouchPanel
+[EXPANDED NODES]
+Node1=Image Files
+Node2=Active Comments Files
+Count=2
+[PROGRAMMER_OPTIONS]
+Value=SWD
+[PROGRAMMER_TYPE]
+Value=mE
