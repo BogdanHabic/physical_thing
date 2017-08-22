@@ -44,21 +44,22 @@ extern short int DATA_RX[];
 short int temp1;
 char txt[4];
 
+#define NULL 0
+
+#define STATE_UNDEFINED -1
 #define STATE_IDLE 0
 #define STATE_RUNNING 1
 
-struct Worker {
+typedef struct Worker {
     short int state;
     short int ticks;
     short int address[2];
-};
+} Worker;
 
 // State
 
 #define NUM_WORKERS 5
 #define MAX_NUM_TICKS 6
-
-short int free_spot = 0;
 
 Worker workers[NUM_WORKERS];
 
@@ -85,14 +86,19 @@ void DrawFrame(){
 }
 
 void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski prekid
-    int i, new_free_spot;
+    int i;
     TIM2_SR.UIF = 0;                                //Kada se prekid desi, postavlja se fleg TIM2_SR.UIF
     // On every tick increment the ticks of all the workers:
-    //	* If a worker exceeds the maximum number of ticks, remove it from the worker array
+    //        * If a worker exceeds the maximum number of ticks, remove it from the worker array
 
-    for (i = 0; i < free_spot; i++) {
-       if (ticks[i] < MAX_NUM_TICKS) {
-
+    for (i = 0; i < NUM_WORKERS; i++) {
+       if (workers[i]->state == STATE_UNDEFINED) {
+           continue;
+       }
+       if (workers[i]->ticks < MAX_NUM_TICKS) {
+           workers[i]->state = STATE_UNDEFINED;
+       } else {
+           workers[i]->ticks++;
        }
     }
 }
@@ -108,37 +114,74 @@ void start_timer() {
     TIM2_CR1.CEN = 1;             // ponovo ukljuèujemo TIM2
 }
 
+void heart_beat(short int addressA, short int addressB) {
+    int i;
+    int free_spot = -1;
+    for (i = 0; i < NUM_WORKERS; i++) {
+        if (workers[i]->state != STATE_UNDEFINED && free_spot == -1) {
+            free_spot = i;
+        }
+        if (workers[i]->state != STATE_UNDEFINED && workers[i]->address[0] == addressA && workers[i]->address[1] == addressB) {
+            workers[i]->ticks = 0;
+            return;
+        }
+    }
+    
+    if (free_spot == -1) {
+       return; // No more free spots
+    }
+    
+    workers[i]->state = STATE_IDLE;
+    workers[i]->ticks = 0;
+    workers[i]->address[0] = addressA;
+    workers[i]->address[1] = addressB;
+}
+
+void print_result(char *result) {
+    //@TODO(bogdan)
+}
+
+void finish_work(char *result, short int addressA, short int addressB) {
+    int i;
+    for (i = 0; i < NUM_WORKERS; i++) {
+        if (workers[i]->state != STATE_UNDEFINED && workers[i]->address[0] == addressA && workers[i]->address[1] == addressB) {
+            workers[i]->ticks = 0;
+            workers[i]->state = STATE_IDLE;
+            print_result(result);
+            //@TODO(bogdan): Reply with ack
+            return;
+        }
+    }
+}
+
+Worker* undefined_worker() {
+    struct Worker *w;
+
+    w->state = STATE_UNDEFINED;
+    w->ticks = 0;
+    w->address[0] = 0;
+    w->address[1] = 0;
+    
+    return w;
+}
+
+void checkout(short int sensorAddressA, short int sensorAddressB) {
+    int i;
+
+    for (i = 0; i < NUM_WORKERS; i++) {
+        if (workers[i]->state == STATE_IDLE) {
+            workers[i]->state = STATE_RUNNING;
+            //@TODO(bogdan): Reply with worker address
+        }
+    }
+}
+
 void InitializeWorkers() {
     int i;
     // workers = malloc(NUM_WORKERS * sizeof(struct Worker));
     for (i = 0; i < NUM_WORKERS; i++) {
-        workers[i] = NULL;
+        workers[i] = *undefined_worker();
     }
-}
-
-Worker* create_worker(short int[] address) {
-    struct Worker *w = malloc(sizeof(struct Worker));
-
-    w->state = STATE_IDLE;
-    w->ticks = 0;
-    w->address[0] = address[0];
-    w->address[1] = address[1];
-
-    return w;
-}
-
-Worker* checkout() {
-    int i = 0;
-    Worker w;
-
-    while (i < NUM_WORKERS && w = workers[i]) {
-        if (w->state == STATE_IDLE) {
-            return &w;
-        }
-        i++;
-    }
-
-    return NULL;
 }
 
 void main() {
