@@ -95,7 +95,7 @@ void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski pr
        if (workers[i]->state == STATE_UNDEFINED) {
            continue;
        }
-       if (workers[i]->ticks < MAX_NUM_TICKS) {
+       if (workers[i]->ticks > MAX_NUM_TICKS) {
            workers[i]->state = STATE_UNDEFINED;
        } else {
            workers[i]->ticks++;
@@ -131,10 +131,10 @@ void heart_beat(short int addressA, short int addressB) {
        return; // No more free spots
     }
     
-    workers[i]->state = STATE_IDLE;
-    workers[i]->ticks = 0;
-    workers[i]->address[0] = addressA;
-    workers[i]->address[1] = addressB;
+    workers[free_spot]->state = STATE_IDLE;
+    workers[free_spot]->ticks = 0;
+    workers[free_spot]->address[0] = addressA;
+    workers[free_spot]->address[1] = addressB;
 }
 
 void print_result(char *result) {
