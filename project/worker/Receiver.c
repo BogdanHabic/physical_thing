@@ -44,6 +44,11 @@ extern short int DATA_RX[];
 short int temp1;
 char txt[4];
 
+#define MSG_TYPE_HB 0
+#define MSG_TYPE_CW 1
+#define MSG_TYPE_FW 2
+#define MSG_TYPE_ACK 3
+
 void DrawFrame(){
   TFT_Init_ILI9341_8bit(320,240);
   TFT_Fill_Screen(CL_WHITE);
@@ -83,13 +88,26 @@ void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski pr
 
 void start_timer() {
     RCC_APB1ENR.TIM2EN = 1;       // koristimo TIM2
-    TIM2_CR1.CEN = 0;             // privremeno iskljuÃ¨ujemo TIM2
+    TIM2_CR1.CEN = 0;             // privremeno iskljuèujemo TIM2
     TIM2_PSC = 1098;              // podesavamo preskaler(tj dvobajtnu vrednost sa kojom se deli frekvencija tajmera(tj TIM2_ARR) )
-    TIM2_ARR = 65514;                // granica brojaÃ¨a ? ili broj od kojeg se kreÃ¦e, pa se dekrementira,ili do kog treba da se doÃ°e inkrementiranjem.
+    TIM2_ARR = 65514;                // granica brojaèa ? ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
                                         //   65514/ 1098 = 59,66667 (tj 1 sekunda)
-    NVIC_IntEnable(IVT_INT_TIM2); // omoguÃ¦avamo prekid IVT_INT_TIM2
-    TIM2_DIER.UIE = 1;            // omoguÃ¦avamo update prekidza TIM2
-    TIM2_CR1.CEN = 1;             // ponovo ukljuÃ¨ujemo TIM2
+    NVIC_IntEnable(IVT_INT_TIM2); // omoguæavamo prekid IVT_INT_TIM2
+    TIM2_DIER.UIE = 1;            // omoguæavamo update prekidza TIM2
+    TIM2_CR1.CEN = 1;             // ponovo ukljuèujemo TIM2
+}
+
+void read() {
+    temp1 = read_ZIGBEE_short(INTSTAT); // Read and flush register INTSTAT
+    read_RX_FIFO();                     // Read receive data
+    ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
+    TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
+    TFT_Write_Text(txt, 195, 80);       // Display string on TFT
+    delay_ms(1000);
+    TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+    TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
+
+    GPIOD_ODR = DATA_RX[0];
 }
 
 void main() {
@@ -100,16 +118,7 @@ void main() {
   
   while(1){                               // Infinite loop
     if(Debounce_INT() == 0 ){             // Debounce line INT
-      temp1 = read_ZIGBEE_short(INTSTAT); // Read and flush register INTSTAT
-      read_RX_FIFO();                     // Read receive data
-      ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
-      TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
-      TFT_Write_Text(txt, 195, 80);       // Display string on TFT
-      delay_ms(1000);
-      TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
-      TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
-      
-      GPIOD_ODR = DATA_RX[0];
+      read();
     }
   }
 }
