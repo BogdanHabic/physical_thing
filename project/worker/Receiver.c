@@ -60,6 +60,38 @@ void DrawFrame(){
   TFT_Write_Text("Received data : ", 90, 80);
 }
 
+void do_work(short int input, short int sensorAddressA, short int sensorAddressB) {
+    short int result;
+    delay_ms(2000);
+    
+    result = input * 2;
+    
+    //@TODO(bogdan): send result to sensor
+}
+
+void send_heartbeat() {
+    //@TODO(bogdan): send heartbeat
+}
+
+void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski prekid
+    int i;
+    TIM2_SR.UIF = 0;                                //Kada se prekid desi, postavlja se fleg TIM2_SR.UIF
+    // On every tick send heartbeat
+    
+    send_heartbeat();
+}
+
+void start_timer() {
+    RCC_APB1ENR.TIM2EN = 1;       // koristimo TIM2
+    TIM2_CR1.CEN = 0;             // privremeno iskljuèujemo TIM2
+    TIM2_PSC = 1098;              // podesavamo preskaler(tj dvobajtnu vrednost sa kojom se deli frekvencija tajmera(tj TIM2_ARR) )
+    TIM2_ARR = 65514;                // granica brojaèa ? ili broj od kojeg se kreæe, pa se dekrementira,ili do kog treba da se doðe inkrementiranjem.
+                                        //   65514/ 1098 = 59,66667 (tj 1 sekunda)
+    NVIC_IntEnable(IVT_INT_TIM2); // omoguæavamo prekid IVT_INT_TIM2
+    TIM2_DIER.UIE = 1;            // omoguæavamo update prekidza TIM2
+    TIM2_CR1.CEN = 1;             // ponovo ukljuèujemo TIM2
+}
+
 void main() {
   GPIO_Digital_Output(&GPIOD_ODR, _GPIO_PINMASK_LOW);
 
