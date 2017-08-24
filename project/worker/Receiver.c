@@ -44,6 +44,11 @@ extern short int DATA_RX[];
 short int temp1;
 char txt[4];
 
+// HB  -> heartbeat
+// CW  -> checkout worker
+// FW  -> finished work
+// ACK -> generic ack message
+
 #define MSG_TYPE_HB 0
 #define MSG_TYPE_CW 1
 #define MSG_TYPE_FW 2
@@ -65,17 +70,41 @@ void DrawFrame(){
   TFT_Write_Text("Received data : ", 90, 80);
 }
 
-void do_work(short int input, short int sensorAddressA, short int sensorAddressB) {
-    short int result;
+void do_work(short int input) {
+    short int result, destinationAddr;
     delay_ms(2000);
     
     result = input * 2;
+
+    // Send request to display work
+
+    ADDRESS_short_2[0] = INTERFACE_ADDR;
+    ADDRESS_short_2[1] = INTERFACE_ADDR;
+
+    DATA_TX[0] = MSG_TYPE_FW;
+    DATA_TX[1] = result;
     
-    //@TODO(bogdan): send result to sensor
+    write_TX_normal_FIFO();
+
+
+    // Send ACK
+
+    DATA_TX[0] = MSG_TYPE_ACK;
+
+    ADDRESS_short_2[0] = data_RX_FIFO[11];
+    ADDRESS_short_2[1] = data_RX_FIFO[12];
+    
+    write_TX_normal_FIFO();
 }
 
 void send_heartbeat() {
-    //@TODO(bogdan): send heartbeat
+    ADDRESS_short_2[0] = INTERFACE_ADDR;
+    ADDRESS_short_2[1] = INTERFACE_ADDR;
+    DATA_TX[0] = MSG_TYPE_HB;
+
+    write_TX_normal_FIFO();
+
+    delay_ms(100);
 }
 
 void Timer2_interrupt() iv IVT_INT_TIM2 {        // iv-> hendler za tajmerski prekid
@@ -100,14 +129,32 @@ void start_timer() {
 void read() {
     temp1 = read_ZIGBEE_short(INTSTAT); // Read and flush register INTSTAT
     read_RX_FIFO();                     // Read receive data
-    ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
-    TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
-    TFT_Write_Text(txt, 195, 80);       // Display string on TFT
-    delay_ms(1000);
-    TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
-    TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
+    // ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
+    // TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
+    // TFT_Write_Text(txt, 195, 80);       // Display string on TFT
+    // delay_ms(1000);
+    // TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+    // TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
 
-    GPIOD_ODR = DATA_RX[0];
+    // GPIOD_ODR = DATA_RX[0];
+    
+    if (data_RX_FIFO[7] != MY_ADDR || data_RX_FIFO[8] != MY_ADDR) {
+        return; // Ignore messages that aren't meant for me
+    }
+
+    switch (DATA_RX[0]) {
+        case MSG_TYPE_HB:
+            break;
+        case MSG_TYPE_CW:
+            do_work(DATA_RX[1]);
+            break;
+        case MSG_TYPE_FW:
+            break;
+        case MSG_TYPE_ACK:
+            break;
+    }
+
+    delay_ms(100);
 }
 
 void main() {

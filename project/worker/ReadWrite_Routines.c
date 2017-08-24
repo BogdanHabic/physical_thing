@@ -110,8 +110,11 @@ void read_RX_FIFO() {
   }
 
   DATA_RX[0] = data_RX_FIFO[HEADER_LENGHT + 1];               // coping valid data
-  LQI   = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 2];  // coping valid data
-  RSSI2 = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 3];  // coping valid data
+  DATA_RX[1] = data_RX_FIFO[HEADER_LENGHT + 2];               // coping valid data
+  DATA_RX[2] = data_RX_FIFO[HEADER_LENGHT + 3];               // coping valid data
+  DATA_RX[3] = data_RX_FIFO[HEADER_LENGHT + 4];               // coping valid data
+  LQI   = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 5];  // coping valid data
+  RSSI2 = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 6];  // coping valid data
 
   temp = read_ZIGBEE_short(BBREG1);      // enable receiving packets off air.
   temp = temp & (!0x04);                 // mask for enable receiving
