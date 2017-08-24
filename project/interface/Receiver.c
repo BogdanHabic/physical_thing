@@ -114,9 +114,14 @@ void start_timer() {
     TIM2_CR1.CEN = 1;             // ponovo ukljuèujemo TIM2
 }
 
-void heart_beat(short int addressA, short int addressB) {
+void heartbeat() {
     int i;
     int free_spot = -1;
+    short int addressA, addressB;
+
+    addressA = data_RX_FIFO[11];
+    addressB = data_RX_FIFO[12];
+
     for (i = 0; i < NUM_WORKERS; i++) {
         if (workers[i]->state != STATE_UNDEFINED && free_spot == -1) {
             free_spot = i;
@@ -141,14 +146,24 @@ void print_result(char *result) {
     //@TODO(bogdan)
 }
 
-void finish_work(char *result, short int addressA, short int addressB) {
+void finish_work() {
     int i;
+    short int addressA, addressB;
+    char result[4];
+
     for (i = 0; i < NUM_WORKERS; i++) {
         if (workers[i]->state != STATE_UNDEFINED && workers[i]->address[0] == addressA && workers[i]->address[1] == addressB) {
             workers[i]->ticks = 0;
             workers[i]->state = STATE_IDLE;
+
+            ByteToStr(DATA_RX[1],&result);
             print_result(result);
-            //@TODO(bogdan): Reply with ack
+
+            DATA_TX[0] = MSG_TYPE_ACK;
+
+            ADDRESS_short_2[0] = data_RX_FIFO[11];
+            ADDRESS_short_2[1] = data_RX_FIFO[12];
+
             return;
         }
     }
@@ -165,13 +180,23 @@ Worker* undefined_worker() {
     return w;
 }
 
-void checkout(short int sensorAddressA, short int sensorAddressB) {
+void checkout() {
     int i;
+    short int sensorAddressA, sensorAddressB;
+
+    sensorAddressA = data_RX_FIFO[11];
+    sensorAddressB = data_RX_FIFO[12];
 
     for (i = 0; i < NUM_WORKERS; i++) {
         if (workers[i]->state == STATE_IDLE) {
             workers[i]->state = STATE_RUNNING;
-            //@TODO(bogdan): Reply with worker address
+
+            DATA_TX[0] = MSG_TYPE_CW;
+            DATA_TX[1] = 0;
+            DATA_TX[2] = workers[i]->address[0];
+            DATA_TX[3] = workers[i]->address[1];
+
+            write_TX_normal_FIFO();
         }
     }
 }
@@ -184,6 +209,39 @@ void InitializeWorkers() {
     }
 }
 
+void read() {
+    temp1 = read_ZIGBEE_short(INTSTAT); // Read and flush register INTSTAT
+    read_RX_FIFO();                     // Read receive data
+    // ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
+    // TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
+    // TFT_Write_Text(txt, 195, 80);       // Display string on TFT
+    // delay_ms(1000);
+    // TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+    // TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
+
+    // GPIOD_ODR = DATA_RX[0];
+    
+    if (data_RX_FIFO[7] != MY_ADDR || data_RX_FIFO[8] != MY_ADDR) {
+        return; // Ignore messages that aren't meant for me
+    }
+
+    switch (DATA_RX[0]) {
+        case MSG_TYPE_HB:
+            heartbeatshe();
+            break;
+        case MSG_TYPE_CW:
+            checkout();
+            break;
+        case MSG_TYPE_FW:
+            finish_work();
+            break;
+        case MSG_TYPE_ACK:
+            break;
+    }
+
+    delay_ms(100);
+}
+
 void main() {
   GPIO_Digital_Output(&GPIOD_ODR, _GPIO_PINMASK_LOW);
 
@@ -193,16 +251,7 @@ void main() {
   
   while(1) {                               // Infinite loop
     if(Debounce_INT() == 0 ){             // Debounce line INT
-      temp1 = read_ZIGBEE_short(INTSTAT); // Read and flush register INTSTAT
-      read_RX_FIFO();                     // Read receive data
-      ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
-      TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
-      TFT_Write_Text(txt, 195, 80);       // Display string on TFT
-      delay_ms(1000);
-      TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
-      TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
-      
-      GPIOD_ODR = DATA_RX[0];
+      read();
     }
   }
 }

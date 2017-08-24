@@ -70,8 +70,9 @@ void DrawFrame(){
   TFT_Write_Text("Received data : ", 90, 80);
 }
 
-void do_work(short int input) {
-    short int result, destinationAddr;
+void do_work() {
+    short int result, destinationAddr, input;
+    input = DATA_RX[1];
     delay_ms(2000);
     
     result = input * 2;
@@ -146,7 +147,7 @@ void read() {
         case MSG_TYPE_HB:
             break;
         case MSG_TYPE_CW:
-            do_work(DATA_RX[1]);
+            do_work();
             break;
         case MSG_TYPE_FW:
             break;

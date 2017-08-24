@@ -3,6 +3,9 @@
 #include "Reset_Routines.h"
 #include "Misc_Routines.h"
 
+#define MY_ADDR 1
+#define INTERFACE_ADDR 1
+
 extern sfr sbit TFT_BLED;
 extern short int ADDRESS_short_1[], ADDRESS_short_2[], ADDRESS_long_1[], ADDRESS_long_2[], PAN_ID_1[], PAN_ID_2[];
 extern short int LQI, RSSI2, SEQ_NUMBER, lost_data;
@@ -19,7 +22,7 @@ void Initialize() {
   address_TX_normal_FIFO = 0;
 
   for (i = 0; i < 2; i++) {
-    ADDRESS_short_1[i] = 1;
+    ADDRESS_short_1[i] = MY_ADDR;
     ADDRESS_short_2[i] = 2;
     PAN_ID_1[i] = 3;
     PAN_ID_2[i] = 3;
