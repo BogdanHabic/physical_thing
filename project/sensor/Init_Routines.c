@@ -1,17 +1,20 @@
+
 #include "registers.h"
 #include "ReadWrite_Routines.h"
 #include "Reset_Routines.h"
 #include "Misc_Routines.h"
 
+#define MY_ADDR 2
+#define INTERFACE_ADDR 1
+
 extern sfr sbit TFT_BLED;
 extern short int ADDRESS_short_1[], ADDRESS_short_2[], ADDRESS_long_1[], ADDRESS_long_2[], PAN_ID_1[], PAN_ID_2[];
 extern short int LQI, RSSI2, SEQ_NUMBER, lost_data;
 extern int address_RX_FIFO, address_TX_normal_FIFO;
-extern short int DATA_TX[];
 
 void Initialize() {
   short int i = 0;
-  //variable initialization
+  // variable initialization
   LQI = 0;
   RSSI2 = 0;
   SEQ_NUMBER = 0x23;
@@ -20,7 +23,7 @@ void Initialize() {
   address_TX_normal_FIFO = 0;
 
   for (i = 0; i < 2; i++) {
-    ADDRESS_short_1[i] = 1;
+    ADDRESS_short_1[i] = MY_ADDR;
     ADDRESS_short_2[i] = 2;
     PAN_ID_1[i] = 3;
     PAN_ID_2[i] = 3;
@@ -39,7 +42,6 @@ void Initialize() {
   // Set PD0 and PD1 as digital input
   GPIO_Digital_Input(&GPIOD_BASE, _GPIO_PINMASK_0);
 
-  DATA_TX[0] = 0;        // Initialize first byte
 
   Delay_ms(5);
 
@@ -58,9 +60,9 @@ void Initialize() {
   RF_reset();                               // RF reset
   set_WAKE_from_pin();                      // Set wake from pin
 
-  set_long_address(ADDRESS_long_1);         // Set long address
-  set_short_address(ADDRESS_short_1);       // Set short address
-  set_PAN_ID(PAN_ID_1);                     // Set PAN_ID
+  set_long_address(ADDRESS_long_2);         // Set long address
+  set_short_address(ADDRESS_short_2);       // Set short address
+  set_PAN_ID(PAN_ID_2);                     // Set PAN_ID
 
   init_ZIGBEE_nonbeacon();                  // Initialize ZigBee module
   nonbeacon_PAN_coordinator_device();
@@ -70,3 +72,4 @@ void Initialize() {
 
   pin_wake();                               // Wake from pin
 }
+

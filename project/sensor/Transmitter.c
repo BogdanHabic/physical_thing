@@ -34,6 +34,9 @@
 #include "Misc_Routines.h"
 #include "Init_Routines.h"
 
+#define POLL_INTERVAL 500
+#define MAX_WAIT_TIME 3000
+
 // BEE Click Board connections
 sbit CS at GPIOD_ODR.B13;                // CS pin
 sbit RST at GPIOC_ODR.B2;                // RST pin
@@ -46,6 +49,75 @@ sbit WAKE_ at GPIOA_ODR.B4;              // WAKE pin
 
 extern short int DATA_TX[];
 char txt[4];
+short int worker_addr[2];
+short int job_done;
+
+void read() {
+    temp1 = read_ZIGBEE_short(INTSTAT); // Read and flush register INTSTAT
+    read_RX_FIFO();                     // Read receive data
+    // ByteToStr(DATA_RX[0],&txt);         // Convert third byte to string
+    // TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
+    // TFT_Write_Text(txt, 195, 80);       // Display string on TFT
+    // delay_ms(1000);
+    // TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+    // TFT_Write_Text(txt, 195, 80);       // Delete string from TFT
+
+    // GPIOD_ODR = DATA_RX[0];
+    
+    if (data_RX_FIFO[7] != MY_ADDR || data_RX_FIFO[8] != MY_ADDR) {
+        return; // Ignore messages that aren't meant for me
+    }
+
+    switch (DATA_RX[0]) {
+        case MSG_TYPE_HB:
+            break;
+        case MSG_TYPE_CW:
+            worker_addr[0] = DATA_RX[2];
+            worker_addr[1] = DATA_RX[3];
+            break;
+        case MSG_TYPE_FW:
+            break;
+        case MSG_TYPE_ACK:
+            job_done = 1;
+            break;
+    }
+
+    delay_ms(100);
+}
+
+void do_work() {
+    int time = MAX_WAIT_TIME;
+    job_done = 0;
+
+    while (!job_done) { // This might make a problem
+        if (time == MAX_WAIT_TIME) {
+            time = 0;
+            worker_addr[0] = -1;
+            worker_addr[1] = -1;
+
+            while (worker_addr[0] == -1 && worker_addr[1] == -1) {
+                DATA_TX[0] = MSG_TYPE_CW;
+
+                ADDRESS_short_2[0] = INTERFACE_ADDR;
+                ADDRESS_short_2[1] = INTERFACE_ADDR;
+
+                write_TX_normal_FIFO();
+
+                read();
+            }
+        }
+
+        DATA_TX[0] = MSG_TYPE_CW;
+        DATA_TX[1] = 3;
+
+        read();
+
+        if (!job_done) {
+            time += POLL_INTERVAL;
+            delay_ms(POLL_INTERVAL);
+        }
+    }
+}
 
 void DrawFrame(){
   TFT_Init_ILI9341_8bit(320,240);
@@ -68,13 +140,6 @@ void main() {
   DrawFrame();
   
   while(1) {                         // Infinite loop
-    write_TX_normal_FIFO();          // Transmiting
-    ByteToStr(DATA_TX[0],&txt);      // Convert byte to string
-    TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
-    TFT_Write_Text(txt, 215, 80);    // Display string on TFT
-    delay_ms(1000);
-    TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
-    TFT_Write_Text(txt, 215, 80);    // Delete string from TFT
-    DATA_TX[0]++;                    // Incremeting value
+    //@TODO(bogdan): Check for button click
   }
 }
