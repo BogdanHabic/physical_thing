@@ -1,10 +1,14 @@
 main
+	__CC2DW
+	__FillZeros
+	GPIO_Digital_Input
+		GPIO_Config
+			GPIO_Clk_Enable
+	GPIO_Digital_Output
+		GPIO_Config
 	Initialize
 		GPIO_Digital_Output
-			GPIO_Config
-				GPIO_Clk_Enable
 		GPIO_Digital_Input
-			GPIO_Config
 		SPI3_Init_Advanced
 			GPIO_Alternate_Function_Enable
 				GPIO_Configure_Pin
@@ -102,13 +106,12 @@ main
 		pin_reset
 		software_reset
 			write_ZIGBEE_short
-				SPI3_Read
-					SPIx_Read
 				SPI3_Write
 		RF_reset
 			read_ZIGBEE_short
 				SPI3_Write
 				SPI3_Read
+					SPIx_Read
 			write_ZIGBEE_short
 		set_wake_from_pin
 			read_ZIGBEE_short
@@ -151,7 +154,21 @@ main
 			write_ZIGBEE_short
 		pin_wake
 	DrawFrame
-		TFT_Init
+		TFT_Init_ILI9341_8bit
+			Is_TFT_Set
+			TFT_Set_Pen
+			TFT_Set_Brush
+			TFT_Move_Cursor
+			TFT_Set_DataPort_Direction
+			TFT_Reset_ILI9341
+				TFT_Set_Pin_Directions
+				Delay_100ms
+				Delay_5ms
+				Is_TFT_Rotated_180
+				TFT_Set_Index
+				TFT_Write_Command
+				TFT_SSD1963_8bit_Set_Index
+				TFT_SSD1963YT_8bit_Write_Command
 		TFT_Fill_Screen
 		TFT_Set_Pen
 		TFT_Line
@@ -210,19 +227,31 @@ main
 			_TFT_Write_Char
 				TFT_Set_Font
 				TFT_Dot
-	write_TX_normal_FIFO
-		write_ZIGBEE_long
-		set_not_ACK
+	Button
+		Delay_500us
+	do_work
+		write_TX_normal_FIFO
+			write_ZIGBEE_long
+			set_not_ACK
+				read_ZIGBEE_short
+				write_ZIGBEE_short
+			set_not_encrypt
+				read_ZIGBEE_short
+				write_ZIGBEE_short
+			start_transmit
+				read_ZIGBEE_short
+				write_ZIGBEE_short
+		read
+			Debounce_INT
 			read_ZIGBEE_short
-			write_ZIGBEE_short
-		set_not_encrypt
-			read_ZIGBEE_short
-			write_ZIGBEE_short
-		start_transmit
-			read_ZIGBEE_short
-			write_ZIGBEE_short
-	ByteToStr
-	TFT_Set_Font
-	TFT_Write_Text
-	__CC2DW
-	__FillZeros
+			read_RX_FIFO
+				read_ZIGBEE_short
+				write_ZIGBEE_short
+				read_ZIGBEE_long
+					SPI3_Write
+					SPI3_Read
+			ByteToStr
+			TFT_Set_Font
+			TFT_Write_Text
+		TFT_Set_Font
+		TFT_Write_Text

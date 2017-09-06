@@ -1,5 +1,5 @@
-#line 1 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Transmitter.c"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/resources.h"
+#line 1 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Receiver.c"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/resources.h"
 
 char TFT_DataPort at GPIOE_ODR;
 sbit TFT_RST at GPIOE_ODR.B8;
@@ -613,8 +613,8 @@ const code char Verdana12x13_Regular[] = {
  0x00,0x00,0x00,0x00,0x00,0x00,0x8C,0x92,0x62,0x00,0x00,0x00,0x00,
  0x00,0x00,0x00,0x00,0x00,0x00,0xFE,0x01,0x02,0x01,0x02,0x01,0x02,0x01,0x02,0x01,0x02,0x01,0x02,0x01,0xFE,0x01,0x00,0x00,0x00,0x00
  };
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/registers.h"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/readwrite_routines.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/registers.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/readwrite_routines.h"
 short int read_ZIGBEE_long(int address);
 void write_ZIGBEE_long(int address, short int data_r);
 short int read_ZIGBEE_short(short int address);
@@ -622,14 +622,14 @@ void write_ZIGBEE_short(short int address, short int data_r);
 void read_RX_FIFO();
 void start_transmit();
 void write_TX_normal_FIFO();
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/reset_routines.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/reset_routines.h"
 void RF_reset();
 void software_reset();
 void MAC_reset();
 void BB_reset();
 void PWR_reset();
 void pin_reset();
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/misc_routines.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/misc_routines.h"
 void init_ZIGBEE_nonbeacon();
 void init_ZIGBEE_basic();
 void set_TX_power(unsigned short int power);
@@ -657,49 +657,144 @@ void set_RSSI_mode(short int RSSI_mode);
 void set_CCA_mode(short int CCA_mode);
 void set_channel(short int channel_number);
 void enable_interrupt();
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/init_routines.h"
+char Debounce_INT();
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/init_routines.h"
 void Initialize();
-#line 38 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Transmitter.c"
+#line 38 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Receiver.c"
 sbit CS at GPIOD_ODR.B13;
 sbit RST at GPIOC_ODR.B2;
 sbit INT at GPIOD_ODR.B10;
 sbit WAKE_ at GPIOA_ODR.B4;
 
-
-
-
-
-extern short int DATA_TX[];
+extern short int DATA_TX[], ADDRESS_short_2[], data_RX_FIFO[], DATA_RX[];
 char txt[4];
+short int temp1;
+short int worker_addr;
+short int job_done;
+#line 65 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Receiver.c"
+int numer = 0;
 
 void DrawFrame(){
- TFT_Init(320,240);
+ TFT_Init_ILI9341_8bit(320,240);
  TFT_Fill_Screen(CL_WHITE);
  TFT_Set_Pen(CL_BLACK, 1);
  TFT_Line(20, 220, 300, 220);
  TFT_LIne(20, 46, 300, 46);
  TFT_Set_Font(&HandelGothic_BT21x22_Regular, CL_RED, FO_HORIZONTAL);
- TFT_Write_Text("BEE  Click  Board  Demo", 55, 14);
+ TFT_Write_Text("BEE  Click  Board  Demo", 50, 14);
  TFT_Set_Font(&Verdana12x13_Regular, CL_BLACK, FO_HORIZONTAL);
  TFT_Write_Text("EasyMx PRO v7", 19, 223);
  TFT_Set_Font(&Verdana12x13_Regular, CL_RED, FO_HORIZONTAL);
  TFT_Write_Text("www.mikroe.com", 200, 223);
  TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
- TFT_Write_Text("Transmitted data : ", 90, 80);
+ TFT_Write_Text("Received data : ", 90, 80);
+}
+
+void read() {
+
+if(Debounce_INT() == 0 ){
+
+ temp1 = read_ZIGBEE_short( 0x31 );
+ read_RX_FIFO();
+
+
+ if (data_RX_FIFO[7] !=  3 ) {
+ delay_ms(100);
+ return;
+ }
+
+ ByteToStr(data_RX_FIFO[11], &txt);
+ TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
+ TFT_Write_Text(txt, 195, 80);
+
+ delay_ms(100);
+ TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+ TFT_Write_Text(txt, 195, 80);
+
+ switch (DATA_RX[0]) {
+ case  0 :
+ break;
+ case  1 :
+ worker_addr = DATA_RX[2];
+ break;
+ case  2 :
+ break;
+ case  3 :
+ job_done = 1;
+ break;
+ }
+
+}
+ delay_ms(100);
+}
+
+void do_work() {
+ int time =  3000 ;
+ int retries = 0;
+ job_done = 0;
+
+ while (!job_done) {
+ if (time >=  3000 ) {
+ time = 0;
+ worker_addr = -1;
+
+ while (worker_addr == -1) {
+ retries = 0;
+ DATA_TX[0] =  1 ;
+
+ ADDRESS_short_2[0] =  1 ;
+ ADDRESS_short_2[1] =  1 ;
+
+ write_TX_normal_FIFO();
+ while (worker_addr == -1 && retries < 5) {
+ read();
+ retries++;
+ }
+ }
+ }
+
+ DATA_TX[0] =  1 ;
+ DATA_TX[1] = numer++;
+
+ ADDRESS_short_2[0] = worker_addr;
+ ADDRESS_short_2[1] = worker_addr;
+
+ write_TX_normal_FIFO();
+ while (!job_done && retries < 30) {
+ read();
+ retries++;
+ }
+ time =  3000 ;
+ }
+
+
+ TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
+ TFT_Write_Text("JOB DONE", 195, 80);
+
+ delay_ms(100);
+ TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
+ TFT_Write_Text("JOB DONE", 195, 80);
 }
 
 void main() {
+ int oldstate;
+ numer = 1;
+
+ GPIO_Digital_Input(&GPIOA_IDR, _GPIO_PINMASK_0);
+ GPIO_Digital_Output(&GPIOD_ODR, _GPIO_PINMASK_LOW);
+
  Initialize();
  DrawFrame();
 
- while(1) {
- write_TX_normal_FIFO();
- ByteToStr(DATA_TX[0],&txt);
- TFT_Set_Font(&TFT_defaultFont, CL_BLACK, FO_HORIZONTAL);
- TFT_Write_Text(txt, 215, 80);
- delay_ms(1000);
- TFT_Set_Font(&TFT_defaultFont, CL_WHITE, FO_HORIZONTAL);
- TFT_Write_Text(txt, 215, 80);
- DATA_TX[0]++;
+ oldstate = 0;
+
+ do {
+ if (Button(&GPIOA_IDR, 0, 1, 1))
+ oldstate = 1;
+ if (oldstate && Button(&GPIOA_IDR, 0, 1, 0)) {
+ oldstate = 0;
+
+ do_work();
  }
+ } while(1);
 }

@@ -1,6 +1,5 @@
 _pin_reset:
 ;Reset_Routines.c,12 :: 		void pin_reset() {
-SUB	SP, SP, #4
 ;Reset_Routines.c,13 :: 		RST = 0;  // activate reset
 MOVS	R1, #0
 MOVW	R0, #lo_addr(RST+0)
@@ -36,7 +35,6 @@ NOP
 NOP
 ;Reset_Routines.c,17 :: 		}
 L_end_pin_reset:
-ADD	SP, SP, #4
 BX	LR
 ; end of _pin_reset
 _PWR_reset:

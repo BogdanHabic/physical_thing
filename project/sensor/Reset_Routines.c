@@ -2,7 +2,7 @@
 #include "ReadWrite_Routines.h"
 
 extern sfr sbit RST;               // RST pin
-//extern sfr sbit RST_Direction;     // RST pin direction
+//extern sfr sbit RST_Direction;   // RST pin direction
 
 /*
  * Reset functions

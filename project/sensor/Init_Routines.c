@@ -1,11 +1,11 @@
-
 #include "registers.h"
 #include "ReadWrite_Routines.h"
 #include "Reset_Routines.h"
 #include "Misc_Routines.h"
 
-#define MY_ADDR 2
 #define INTERFACE_ADDR 1
+#define MY_ADDR 3
+
 
 extern sfr sbit TFT_BLED;
 extern short int ADDRESS_short_1[], ADDRESS_short_2[], ADDRESS_long_1[], ADDRESS_long_2[], PAN_ID_1[], PAN_ID_2[];
@@ -72,4 +72,3 @@ void Initialize() {
 
   pin_wake();                               // Wake from pin
 }
-

@@ -1,6 +1,6 @@
-#line 1 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Init_Routines.c"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/registers.h"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/readwrite_routines.h"
+#line 1 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Init_Routines.c"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/registers.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/readwrite_routines.h"
 short int read_ZIGBEE_long(int address);
 void write_ZIGBEE_long(int address, short int data_r);
 short int read_ZIGBEE_short(short int address);
@@ -8,14 +8,14 @@ void write_ZIGBEE_short(short int address, short int data_r);
 void read_RX_FIFO();
 void start_transmit();
 void write_TX_normal_FIFO();
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/reset_routines.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/reset_routines.h"
 void RF_reset();
 void software_reset();
 void MAC_reset();
 void BB_reset();
 void PWR_reset();
 void pin_reset();
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/misc_routines.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/misc_routines.h"
 void init_ZIGBEE_nonbeacon();
 void init_ZIGBEE_basic();
 void set_TX_power(unsigned short int power);
@@ -43,12 +43,12 @@ void set_RSSI_mode(short int RSSI_mode);
 void set_CCA_mode(short int CCA_mode);
 void set_channel(short int channel_number);
 void enable_interrupt();
-#line 6 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Init_Routines.c"
+char Debounce_INT();
+#line 10 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Init_Routines.c"
 extern sfr sbit TFT_BLED;
 extern short int ADDRESS_short_1[], ADDRESS_short_2[], ADDRESS_long_1[], ADDRESS_long_2[], PAN_ID_1[], PAN_ID_2[];
 extern short int LQI, RSSI2, SEQ_NUMBER, lost_data;
 extern int address_RX_FIFO, address_TX_normal_FIFO;
-extern short int DATA_TX[];
 
 void Initialize() {
  short int i = 0;
@@ -61,7 +61,7 @@ void Initialize() {
  address_TX_normal_FIFO = 0;
 
  for (i = 0; i < 2; i++) {
- ADDRESS_short_1[i] = 1;
+ ADDRESS_short_1[i] =  3 ;
  ADDRESS_short_2[i] = 2;
  PAN_ID_1[i] = 3;
  PAN_ID_2[i] = 3;
@@ -80,7 +80,6 @@ void Initialize() {
 
  GPIO_Digital_Input(&GPIOD_BASE, _GPIO_PINMASK_0);
 
- DATA_TX[0] = 0;
 
  Delay_ms(5);
 
@@ -99,9 +98,9 @@ void Initialize() {
  RF_reset();
  set_WAKE_from_pin();
 
- set_long_address(ADDRESS_long_1);
- set_short_address(ADDRESS_short_1);
- set_PAN_ID(PAN_ID_1);
+ set_long_address(ADDRESS_long_2);
+ set_short_address(ADDRESS_short_2);
+ set_PAN_ID(PAN_ID_2);
 
  init_ZIGBEE_nonbeacon();
  nonbeacon_PAN_coordinator_device();

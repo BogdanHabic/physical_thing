@@ -25,3 +25,4 @@ void set_RSSI_mode(short int RSSI_mode);
 void set_CCA_mode(short int CCA_mode);
 void set_channel(short int channel_number);
 void enable_interrupt();
+char Debounce_INT();

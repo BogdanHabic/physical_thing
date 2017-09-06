@@ -1,6 +1,6 @@
-#line 1 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/ReadWrite_Routines.c"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/registers.h"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/misc_routines.h"
+#line 1 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/ReadWrite_Routines.c"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/registers.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/misc_routines.h"
 void init_ZIGBEE_nonbeacon();
 void init_ZIGBEE_basic();
 void set_TX_power(unsigned short int power);
@@ -28,11 +28,12 @@ void set_RSSI_mode(short int RSSI_mode);
 void set_CCA_mode(short int CCA_mode);
 void set_channel(short int channel_number);
 void enable_interrupt();
-#line 4 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/ReadWrite_Routines.c"
+char Debounce_INT();
+#line 4 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/ReadWrite_Routines.c"
 extern sfr sbit CS;
 
 
-const unsigned short int DATA_LENGHT = 1;
+const unsigned short int DATA_LENGHT = 4;
 const unsigned short int HEADER_LENGHT = 11;
 
 int address_RX_FIFO, address_TX_normal_FIFO;
@@ -44,12 +45,12 @@ short int PAN_ID_1[2];
 short int PAN_ID_2[2];
 short int DATA_RX[DATA_LENGHT], DATA_TX[DATA_LENGHT], data_TX_normal_FIFO[DATA_LENGHT + HEADER_LENGHT + 2];
 short int LQI, RSSI2, SEQ_NUMBER;
-#line 25 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/ReadWrite_Routines.c"
+#line 25 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/ReadWrite_Routines.c"
 void write_ZIGBEE_short(short int address, short int data_r) {
  CS = 0;
 
  address = ((address << 1) & 0b01111111) | 0x01;
- SPI3_Read(address);
+ SPI3_Write(address);
  SPI3_Write(data_r);
 
  CS = 1;
@@ -64,11 +65,10 @@ short int read_ZIGBEE_short(short int address) {
  address = (address << 1) & 0b01111110;
  SPI3_Write(address);
  data_r = SPI3_Read(dummy_data_r);
-
  CS = 1;
  return data_r;
 }
-#line 53 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/ReadWrite_Routines.c"
+#line 52 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/ReadWrite_Routines.c"
 void write_ZIGBEE_long(int address, short int data_r) {
  short int address_high = 0, address_low = 0;
 
@@ -99,7 +99,7 @@ short int read_ZIGBEE_long(int address) {
  CS = 1;
  return data_r;
 }
-#line 87 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/ReadWrite_Routines.c"
+#line 86 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/ReadWrite_Routines.c"
 void start_transmit() {
  short int temp = 0;
 
@@ -107,7 +107,7 @@ void start_transmit() {
  temp = temp | 0x01;
  write_ZIGBEE_short( 0x1B , temp);
 }
-#line 98 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/ReadWrite_Routines.c"
+#line 97 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/ReadWrite_Routines.c"
 void read_RX_FIFO() {
  unsigned short int temp = 0;
  int i = 0;
@@ -126,8 +126,9 @@ void read_RX_FIFO() {
  DATA_RX[0] = data_RX_FIFO[HEADER_LENGHT + 1];
  DATA_RX[1] = data_RX_FIFO[HEADER_LENGHT + 2];
  DATA_RX[2] = data_RX_FIFO[HEADER_LENGHT + 3];
- LQI = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 2];
- RSSI2 = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 3];
+ DATA_RX[3] = data_RX_FIFO[HEADER_LENGHT + 4];
+ LQI = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 5];
+ RSSI2 = data_RX_FIFO[1 + HEADER_LENGHT + DATA_LENGHT + 6];
 
  temp = read_ZIGBEE_short( 0x39 );
  temp = temp & (!0x04);
@@ -151,6 +152,9 @@ void write_TX_normal_FIFO() {
  data_TX_normal_FIFO[11] = ADDRESS_short_1[0];
  data_TX_normal_FIFO[12] = ADDRESS_short_1[1];
  data_TX_normal_FIFO[13] = DATA_TX[0];
+ data_TX_normal_FIFO[14] = DATA_TX[1];
+ data_TX_normal_FIFO[15] = DATA_TX[2];
+ data_TX_normal_FIFO[16] = DATA_TX[3];
 
  for(i = 0; i < (HEADER_LENGHT + DATA_LENGHT + 2); i++) {
  write_ZIGBEE_long(address_TX_normal_FIFO + i, data_TX_normal_FIFO[i]);

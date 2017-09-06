@@ -3,12 +3,13 @@
 #include "Reset_Routines.h"
 
 extern sfr sbit WAKE_;               // WAKE pin
+extern sfr sbit INT;               // INT pin
 
 /*
  *  Interrupt
  */
 void enable_interrupt() {
- write_ZIGBEE_short(INTCON_M, 0x00);   // 0x00  all interrupts are enable
+ write_ZIGBEE_short(INTCON_M, 0x00);   //0x00  all INTerrupts are enable
 }
 
 /*
@@ -183,7 +184,7 @@ void set_ACK() {
   short int temp = 0;
 
   temp = read_ZIGBEE_short(TXNCON);
-  temp = temp | 0x04;                   // 0x04 mask for set ACK
+  temp = temp | 0x04;                 // 0x04 mask for set ACK
   write_ZIGBEE_short(TXNCON, temp);
 }
 
@@ -191,7 +192,7 @@ void set_not_ACK() {
   short int temp = 0;
 
   temp = read_ZIGBEE_short(TXNCON);
-  temp = temp & (!0x04);                // 0x04 mask for set not ACK
+  temp = temp & (!0x04);              // 0x04 mask for set not ACK
   write_ZIGBEE_short(TXNCON, temp);
 }
 
@@ -202,7 +203,7 @@ void set_encrypt() {
   short int temp = 0;
 
   temp = read_ZIGBEE_short(TXNCON);
-  temp = temp | 0x02;                   // mask for set encrypt
+  temp = temp | 0x02;                 // mask for set encrypt
   write_ZIGBEE_short(TXNCON, temp);
 }
 
@@ -210,7 +211,7 @@ void set_not_encrypt(void){
   short int temp = 0;
 
   temp = read_ZIGBEE_short(TXNCON);
-  temp = temp & (!0x02);                // mask for set not encrypt
+  temp = temp & (!0x02);              // mask for set not encrypt
   write_ZIGBEE_short(TXNCON, temp);
 }
 
@@ -401,8 +402,8 @@ void set_TX_power(unsigned short int power) {             // 0-31 possible varia
 }
 
 /*
-* Init ZIGBEE module
-*/
+ * Init ZIGBEE module
+ */
 void init_ZIGBEE_basic() {
   write_ZIGBEE_short(PACON2, 0x98);   // Initialize FIFOEN = 1 and TXONTS = 0x6
   write_ZIGBEE_short(TXSTBL, 0x95);   // Initialize RFSTBL = 0x9
@@ -421,4 +422,17 @@ void init_ZIGBEE_nonbeacon() {
   enable_interrupt();  // Enables all interrupts
   set_channel(11);     // Channel 11
   RF_reset();
+}
+
+char Debounce_INT() {
+  char i = 0, j = 0, intn_d = 0;
+  for(i = 0; i < 5; i++) {
+    intn_d = INT;
+    if (intn_d == 1)
+      j++;
+  }
+  if (j > 2)
+    return 1;
+  else 
+    return 0;
 }

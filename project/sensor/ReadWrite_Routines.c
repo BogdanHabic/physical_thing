@@ -136,10 +136,11 @@ void write_TX_normal_FIFO() {
   data_TX_normal_FIFO[9]  = PAN_ID_1[0];                 // source pan
   data_TX_normal_FIFO[10] = PAN_ID_1[1];
   data_TX_normal_FIFO[11] = ADDRESS_short_1[0];          // source address
-  data_TX_normal_FIFO[12] = ADDRESS_short_1[1]; data_TX_normal_FIFO[13] = DATA_TX[0];                  // msg type
-  data_TX_normal_FIFO[14] = DATA_TX[1];                  // payload
-  data_TX_normal_FIFO[15] = DATA_TX[2];                  // worker addrA
-  data_TX_normal_FIFO[16] = DATA_TX[3];                  // worker addrB
+  data_TX_normal_FIFO[12] = ADDRESS_short_1[1];
+  data_TX_normal_FIFO[13] = DATA_TX[0];                  // data
+  data_TX_normal_FIFO[14] = DATA_TX[1];                  // data
+  data_TX_normal_FIFO[15] = DATA_TX[2];                  // data
+  data_TX_normal_FIFO[16] = DATA_TX[3];                  // data
 
   for(i = 0; i < (HEADER_LENGHT + DATA_LENGHT + 2); i++) {
     write_ZIGBEE_long(address_TX_normal_FIFO + i, data_TX_normal_FIFO[i]); // write frame into normal FIFO
@@ -149,4 +150,3 @@ void write_TX_normal_FIFO() {
   set_not_encrypt();
   start_transmit();
 }
-

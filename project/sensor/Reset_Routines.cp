@@ -1,6 +1,6 @@
-#line 1 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Reset_Routines.c"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/registers.h"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/readwrite_routines.h"
+#line 1 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Reset_Routines.c"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/registers.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/readwrite_routines.h"
 short int read_ZIGBEE_long(int address);
 void write_ZIGBEE_long(int address, short int data_r);
 short int read_ZIGBEE_short(short int address);
@@ -8,9 +8,9 @@ void write_ZIGBEE_short(short int address, short int data_r);
 void read_RX_FIFO();
 void start_transmit();
 void write_TX_normal_FIFO();
-#line 4 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Reset_Routines.c"
+#line 4 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Reset_Routines.c"
 extern sfr sbit RST;
-#line 12 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Reset_Routines.c"
+#line 12 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Reset_Routines.c"
 void pin_reset() {
  RST = 0;
  Delay_ms(5);

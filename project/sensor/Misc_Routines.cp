@@ -1,6 +1,6 @@
-#line 1 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/registers.h"
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/readwrite_routines.h"
+#line 1 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/registers.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/readwrite_routines.h"
 short int read_ZIGBEE_long(int address);
 void write_ZIGBEE_long(int address, short int data_r);
 short int read_ZIGBEE_short(short int address);
@@ -8,20 +8,21 @@ void write_ZIGBEE_short(short int address, short int data_r);
 void read_RX_FIFO();
 void start_transmit();
 void write_TX_normal_FIFO();
-#line 1 "z:/materijal/2013/8. semestar/sistemi u realnom vremenu/vezbe/vezba 7/bee primer/transmitter/reset_routines.h"
+#line 1 "c:/users/user/desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/reset_routines.h"
 void RF_reset();
 void software_reset();
 void MAC_reset();
 void BB_reset();
 void PWR_reset();
 void pin_reset();
-#line 5 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 5 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 extern sfr sbit WAKE_;
-#line 10 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+extern sfr sbit INT;
+#line 11 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void enable_interrupt() {
  write_ZIGBEE_short( 0x32 , 0x00);
 }
-#line 17 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 18 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_channel(short int channel_number) {
  if((channel_number > 26) || (channel_number < 11)) channel_number = 11;
  switch(channel_number) {
@@ -76,7 +77,7 @@ void set_channel(short int channel_number) {
  }
  RF_reset();
 }
-#line 75 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 76 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_CCA_mode(short int CCA_mode) {
  short int temp = 0;
  switch(CCA_mode) {
@@ -117,7 +118,7 @@ void set_CCA_mode(short int CCA_mode) {
  break;
  }
  }
-#line 119 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 120 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_RSSI_mode(short int RSSI_mode) {
  short int temp = 0;
 
@@ -134,7 +135,7 @@ void set_RSSI_mode(short int RSSI_mode) {
  break;
  }
 }
-#line 139 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 140 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void nonbeacon_PAN_coordinator_device() {
  short int temp = 0;
 
@@ -174,7 +175,7 @@ void nonbeacon_device() {
  temp = temp & 0xDF;
  write_ZIGBEE_short( 0x11 , temp);
 }
-#line 182 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 183 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_ACK() {
  short int temp = 0;
 
@@ -190,7 +191,7 @@ void set_not_ACK() {
  temp = temp & (!0x04);
  write_ZIGBEE_short( 0x1B , temp);
 }
-#line 201 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 202 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_encrypt() {
  short int temp = 0;
 
@@ -206,7 +207,7 @@ void set_not_encrypt(void){
  temp = temp & (!0x02);
  write_ZIGBEE_short( 0x1B , temp);
 }
-#line 220 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 221 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_IFS_recomended() {
  short int temp = 0;
 
@@ -242,7 +243,7 @@ void set_IFS_default() {
  temp = temp | 0x41;
  write_ZIGBEE_short( 0x27 , temp);
 }
-#line 259 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 260 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_reception_mode(short int r_mode) {
  short int temp = 0;
 
@@ -271,7 +272,7 @@ void set_reception_mode(short int r_mode) {
  break;
  }
 }
-#line 291 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 292 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_frame_format_filter(short int fff_mode) {
  short int temp = 0;
 
@@ -308,7 +309,7 @@ void set_frame_format_filter(short int fff_mode) {
  break;
  }
 }
-#line 331 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 332 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void flush_RX_FIFO_pointer() {
  short int temp;
 
@@ -316,7 +317,7 @@ void flush_RX_FIFO_pointer() {
  temp = temp | 0x01;
  write_ZIGBEE_short( 0x0D , temp);
 }
-#line 342 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 343 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_short_address(short int * address) {
  write_ZIGBEE_short( 0x03 , address[0]);
  write_ZIGBEE_short( 0x04 , address[1]);
@@ -334,7 +335,7 @@ void set_PAN_ID(short int * address) {
  write_ZIGBEE_short( 0x01 , address[0]);
  write_ZIGBEE_short( 0x02 , address[1]);
 }
-#line 363 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 364 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_wake_from_pin() {
  short int temp = 0;
 
@@ -352,7 +353,7 @@ void pin_wake() {
  WAKE_ = 1;
  Delay_ms(5);
 }
-#line 384 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 385 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void enable_PLL() {
  write_ZIGBEE_long( 0x202 , 0x80);
 }
@@ -360,7 +361,7 @@ void enable_PLL() {
 void disable_PLL() {
  write_ZIGBEE_long( 0x202 , 0x00);
 }
-#line 395 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 396 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void set_TX_power(unsigned short int power) {
  if((power < 0) || (power > 31))
  power = 31;
@@ -368,7 +369,7 @@ void set_TX_power(unsigned short int power) {
  power = ((power & 0b00011111) << 3) & 0b11111000;
  write_ZIGBEE_long( 0x203 , power);
 }
-#line 406 "Z:/Materijal/2013/8. Semestar/Sistemi u realnom vremenu/Vezbe/Vezba 7/BEE primer/Transmitter/Misc_Routines.c"
+#line 407 "C:/Users/User/Desktop/physical_thing-master/physical_thing-master/project/sensor-stvarno/Misc_Routines.c"
 void init_ZIGBEE_basic() {
  write_ZIGBEE_short( 0x18 , 0x98);
  write_ZIGBEE_short( 0x2E , 0x95);
@@ -387,4 +388,17 @@ void init_ZIGBEE_nonbeacon() {
  enable_interrupt();
  set_channel(11);
  RF_reset();
+}
+
+char Debounce_INT() {
+ char i = 0, j = 0, intn_d = 0;
+ for(i = 0; i < 5; i++) {
+ intn_d = INT;
+ if (intn_d == 1)
+ j++;
+ }
+ if (j > 2)
+ return 1;
+ else
+ return 0;
 }
